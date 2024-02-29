@@ -1,0 +1,10 @@
+std.exe < string10.in > string10.out
+std.exe < string11.in > string11.out
+std.exe < string12.in > string12.out
+std.exe < string13.in > string13.out
+std.exe < string14.in > string14.out
+std.exe < string15.in > string15.out
+std.exe < string16.in > string16.out
+std.exe < string17.in > string17.out
+std.exe < string18.in > string18.out
+std.exe < string19.in > string19.out
