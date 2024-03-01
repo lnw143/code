@@ -40,7 +40,8 @@ int lca(int x,int y) {
 }
 const auto dfn_cmp = [](int x,int y) { return dfn[x]<dfn[y]; };
 int solve(vector<int> node) {
-	sort()
+	sort(node.begin(),node.end(),dfn_cmp);
+	
 }
 int main() {
 	scanf("%d",&n);

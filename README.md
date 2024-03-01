@@ -58,10 +58,11 @@ namespace FAST_IO {
 		while(tp!=stk) pc(*--tp);
 	}
 	void write(char c) { pc(c); }
-	template<typename T,typename ...Args> void write(T &x,Args &...args) {
+	template<typename T,typename ...Args> void write(T x,Args ...args) {
 		write(x);
 		write(args...);
 	}
+	struct TMP { ~TMP() { flush(); } } tmp;
 };
 using FAST_IO::read;
 using FAST_IO::write;
