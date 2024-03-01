@@ -19,7 +19,7 @@ namespace FAST_IO {
 	char buf[BUF],*p1=buf,*p2=buf;
 	char pbuf[BUF],*p=pbuf;
 	char gc() {
-		return p1==p2?(p2=(p1=buf)+fread(buf,1,BUF,stdin),p1==p2?EOF:*p1++):*p1++;
+		return p1==p2&&(p2=(p1=buf)+fread(buf,1,BUF,stdin),p1==p2)?EOF:*p1++;
 	}
 	void pc(char c) {
 		*p++=c;
