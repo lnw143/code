@@ -1,4 +1,6 @@
 @echo off
+d:
+cd code
 for /d %%f in (*) do (
 	rmdir /s /q "%%f/.vscode"
 	rmdir /s /q "%%f/.cph"
