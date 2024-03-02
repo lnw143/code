@@ -1,11 +1,12 @@
 #include<cstdio>
+#include<vector>
 using namespace std;
-const int N(5e5);
+const int N(5e5), LOG_N(19 + 2);
 int n,m;
 char s[N + 2];
 namespace SAM {
 	const int S(N * 2 + 2), A(26);
-	int ch[S][A],len[S],fa[S],las,tot;
+	int ch[S][A],len[S],fa[S],las=1,tot=1;
 	void insert(int c) {
 		int p=las,np=++tot;
 		las=np;
@@ -25,8 +26,31 @@ namespace SAM {
 			}
 		}
 	}
-	
+	namespace tree {
+		int anc[N + 2][LOG_N];
+		vector<int> e[N + 2];
+		void dfs(int u) {
+			for(int i=1; i<LOG_N; ++i)
+				anc[u][i]=anc[anc[u][i-1]][i-1];
+			for(int v:e[u])
+				dfs(v);
+		}
+		void maketree() {
+			for(int i=2; i<=tot; ++i)
+				anc[i][0]=fa[i],
+				e[fa[i]].push_back(i);
+			anc[1][0]=1;
+			dfs(1);
+		}
+		vector<int> ve[N + 2];
+		
+	}
 }
 int main() {
+	scanf("%d%d%s",&n,&m,s+1);
+	for(int i=n; i>=1; --i)
+		SAM::insert(s[i]-'a');
+	
+	
 	return 0;
 }
