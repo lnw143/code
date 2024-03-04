@@ -8,7 +8,7 @@ const int N = 1e6, A = 26;
 int i;
 ll ans;
 char s[N + 2];
-namespace SAM {
+namespace sam {
 	const int S = N * 2 + 2;
 	int tot=1,las=1,fa[S],tr[S][A + 2],len[S],f[S];
 	void copy(int x,int y) {
@@ -56,8 +56,8 @@ namespace SAM {
 int main() {
 	scanf("%s",s);
 	for(i=0; s[i]; ++i)
-		SAM::insert(s[i]-'a');
-	SAM::dp();
+		sam::insert(s[i]-'a');
+	sam::dp();
 	printf("%lld",ans);
 	return 0;
 }

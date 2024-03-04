@@ -5,7 +5,7 @@ const int N = 1e5, A = 26;
 using ll = long long;
 int n,i;
 char ch;
-namespace SAM {
+namespace sam {
 	const int S = N * 2 + 2;
 	int las=1,tot=1,tr[S][A + 2],fa[S],len[S];
 	void insert(int c) {
@@ -39,8 +39,8 @@ int main() {
 	scanf("%d",&n);
 	for(i=1; i<=n; ++i) {
 		scanf(" %c",&ch);
-		SAM::insert(ch-'a');
+		sam::insert(ch-'a');
 	}
-	printf("%lld",SAM::get_diff());
+	printf("%lld",sam::get_diff());
 	return 0;
 }

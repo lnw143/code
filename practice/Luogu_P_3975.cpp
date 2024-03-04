@@ -6,7 +6,7 @@ using namespace std;
 const int N = 5e5, A = 26;
 int t,i,k;
 char s[N + 2],ans[N + 2];
-namespace SAM {
+namespace sam {
 	const int S = N * 2 + 2;
 	int tot=1,las=1,tr[S][A + 2],fa[S],len[S],sz[S],f[S];
 	bool vis[S];
@@ -86,12 +86,12 @@ namespace SAM {
 int main() {
 	scanf("%s",s);
 	for(i=0; s[i]; ++i)
-		SAM::insert(s[i]-'a');
+		sam::insert(s[i]-'a');
 	scanf("%d%d",&t,&k);
-	SAM::sol_sz(t);
-	SAM::dfs(1);
-	SAM::print();
-	if(~SAM::get_ans(ans,k))
+	sam::sol_sz(t);
+	sam::dfs(1);
+	sam::print();
+	if(~sam::get_ans(ans,k))
 		printf("%s",ans);
 	else
 		printf("-1");
