@@ -1,38 +1,41 @@
 #include<cstdio>
 #include<algorithm>
 #include<utility>
-#include<vector>
 using namespace std;
 using pII = pair<int,int>;
 const int N(2e5), logN(20);
-int n,q,f[N + 2][logN],g[N + 2][logN],s[2],h[N + 2],v[N + 2];
-
+int n,q,f[N + 2][logN],g[N + 2][logN],s[2],a[N + 2],b[N + 2];
 pII query(int x,int y,int d) {
-	int a=lower_bound(h+1,h+*h+1,y)-h,
-		b=lower_bound(v+1,v+*v+1,x)-v,t;
-	if(v[b]==x) {
-		if(a>=*h||y+d<=h[a+1]) return pII(x,y+d);
-		t=(h[a]^y)&1;
-		d-=h[a]-y;
-	} else if(h[a]==y) {
-		if(b>=*v||x+d<=v[b+1]) return pII(x+d,y);
-		t=(v[b]^x)&1;
-		d-=v[b]-x;
+	int u=lower_bound(a+1,a+*a+1,y)-a,
+		v=lower_bound(b+1,b+*b+1,x)-b,t=0;
+	if(v>*b) return pII(x+d,y);
+	if(u>*a) return pII(x,y+d);
+	if(x<b[v]) {
+		if(x+d<=b[v]) return pII(x+d,y);
+		t=(b[v]^x)&1;
+		d-=b[v]-x;
+	}
+	if(y<a[u]) {
+		if(y+d<=a[u]) return pII(x,y+d);
+		t=(a[u]^y)&1;
+		d-=a[u]-y;
 	}
 	for(int i=logN-1; i>=0; --i)
-		if(f[a][i]<=*h&&g[b][i]<=*v&&h[f[a][i]]-h[a]+v[g[b][i]]-v[b]<=d) {
-			d-=h[f[a][i]]-h[a]+v[g[b][i]]-v[b];
-			a=f[a][i];
-			b=g[b][i];
+		if(f[u][i]<=*a&&g[v][i]<=*b&&a[f[u][i]]-a[u]+b[g[v][i]]-b[v]<=d) {
+			d-=a[f[u][i]]-a[u]+b[g[v][i]]-b[v];
+			u=f[u][i];
+			v=g[v][i];
 		}
-	if(t&&f[a][0]<=*h&&h[f[a][0]]-h[a]<=d) {
-		d-=h[f[a][0]]-h[a];
+	if(!t&&f[u][0]<=*a&&a[f[u][0]]-a[u]<=d) {
+		d-=a[f[u][0]]-a[u];
+		u=f[u][0];
 		t^=1;
-	} else if(!t&&g[b][0]<=*v&&v[g[b][0]]-v[b]<=d) {
-		d-=v[g[b][0]]-v[b];
+	} else if(t&&g[v][0]<=*b&&b[g[v][0]]-b[v]<=d) {
+		d-=b[g[v][0]]-b[v];
+		v=g[v][0];
 		t^=1;
 	}
-	return t?pII(v[b]+d,h[a]):pII(v[b],h[a]+d);
+	return t?pII(b[v]+d,a[u]):pII(b[v],a[u]+d);
 }
 int main() {
 	scanf("%d%d",&n,&q);
@@ -40,22 +43,22 @@ int main() {
 		int x;
 		char c;
 		scanf(" %c %d",&c,&x);
-		(c=='H'?h[++*h]:v[++*v])=x;
+		(c=='H'?a[++*a]:b[++*b])=x;
 	}
-	auto preProcess=[](int f[][logN],int h[]) {
-		sort(h+1,h+*h+1);
-		s[0]=s[1]=*h+1;
+	auto preProcess=[](int f[][logN],int a[]) {
+		sort(a+1,a+*a+1);
+		s[0]=s[1]=*a+1;
 		for(int i=0; i<logN; ++i)
-			f[*h+1][i]=*h+1;
-		for(int i=*h; i>=1; --i) {
-			f[i][0]=s[h[i]&1^1];
-			s[h[i]&1]=i;
+			f[*a+1][i]=*a+1;
+		for(int i=*a; i>=1; --i) {
+			f[i][0]=s[(a[i]&1)^1];
+			s[a[i]&1]=i;
 			for(int j=1; j<logN; ++j)
 				f[i][j]=f[f[i][j-1]][j-1];
 		}
 	};
-	preProcess(f,h);
-	preProcess(g,v);
+	preProcess(f,a);
+	preProcess(g,b);
 	for(int i=1; i<=q; ++i) {
 		int x,y,d;
 		scanf("%d%d%d",&x,&y,&d);
