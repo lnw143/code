@@ -9,18 +9,19 @@ const int N(5e4), M(1e5);
 int n,m,q[M + 2];
 vI p[N + 2];
 namespace acam {
-	const int S(1e5), logS(20);
+	const int S(2e5), logS(20);
 	map<int,int> ch[S + 2];
-	int tot,fail[S + 2],dep[S + 2],anc[S + 2][logS];
+	vector<int> e[S + 2];
+	int tot,fail[S + 2],dep[S + 2],anc[S + 2][logS],dfn[S + 2],low[S + 2],dfc;
 	namespace fenwick {
 		int tr[S + 2];
 		void add(int x,int f) {
-			while(x<=tot) {
+			while(x<=dfc) {
 				tr[x]+=f;
 				x+=x&(-x);
 			}
 		}
-		void modify(int l,int r,int f) {
+		void add(int l,int r,int f) {
 			add(l,f);
 			add(r+1,-f);
 		}
@@ -32,7 +33,7 @@ namespace acam {
 			}
 			return r;
 		}
-		int sum(int l,int r) {
+		int query(int l,int r) {
 			return query(r)-query(l-1);
 		}
 	}
@@ -51,6 +52,12 @@ namespace acam {
 		}
 		return p;
 	}
+	void dfs(int u) {
+		dfn[u]=++dfc;
+		for(auto v : e[u])
+			dfs(v);
+		low[u]=dfc;
+	}
 	void build() {
 		queue<int> q;
 		for(auto [w,v] : ch[0])
@@ -58,6 +65,7 @@ namespace acam {
 		while(!q.empty()) {
 			int u=q.front();
 			q.pop();
+			e[fail[u]].push_back(u);
 			anc[u][0]=fail[u];
 			dep[u]=dep[fail[u]]+1;
 			for(int i=1; i<logS; ++i)
@@ -67,6 +75,7 @@ namespace acam {
 				q.push(v);
 			}
 		}
+		dfs(0);
 	}
 	int lca(int u,int v) {
 		if(dep[u]<dep[v]) swap(u,v);
@@ -89,16 +98,45 @@ vI read() {
 		scanf("%d",&i);
 	return a;
 }
+void mark(vI p) {
+	using namespace acam;
+	sort(p.begin(),p.end(),[](int x,int y){ return dfn[x]<dfn[y]; });
+	for(auto u : p)
+		fenwick::add(dfn[u],1);
+	for(int i=0; i<p.size()-1; ++i)
+		fenwick::add(dfn[lca(p[i],p[i+1])],-1);
+}
+int ask(vI p) {
+	using namespace acam;
+	sort(p.begin(),p.end(),[](int x,int y){ return dfn[x]<dfn[y]; });
+	int ans=0;
+	for(auto u : p)
+		ans+=fenwick::query(dfn[u]);
+	for(int i=0; i<p.size()-1; ++i)
+		ans-=fenwick::query(dfn[lca(p[i],p[i+1])]);
+	return ans;
+}
 int main() {
+	using namespace acam;
 	scanf("%d%d",&n,&m);
 	for(int i=1; i<=n; ++i) {
 		vI a=read(),b=read();
 		a.push_back(1e4+1);
 		a.insert(a.end(),b.begin(),b.end());
-		p[i]=acam::insert(a);
+		p[i]=insert(a);
 	}
-	for(int i=1; i<=m; ++i) {
-		q[i]=acam::insert(read()).back();
-	}
+	for(int i=1; i<=m; ++i)
+		q[i]=insert(read()).back();
+	build();
+	for(int i=1; i<=n; ++i)
+		mark(p[i]);
+	for(int i=1; i<=m; ++i)
+		printf("%d\n",fenwick::query(dfn[q[i]],low[q[i]]));
+	for(int i=1; i<=dfc; ++i)
+		fenwick::tr[i]=0;
+	for(int i=1; i<=m; ++i)
+		fenwick::add(dfn[q[i]],low[q[i]],1);
+	for(int i=1; i<=n; ++i)
+		printf("%d ",ask(p[i]));
 	return 0;
 }
