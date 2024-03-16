@@ -1,0 +1,10 @@
+postman.exe < data/postman1.in > data/postman1.out
+postman.exe < data/postman2.in > data/postman2.out
+postman.exe < data/postman3.in > data/postman3.out
+postman.exe < data/postman4.in > data/postman4.out
+postman.exe < data/postman5.in > data/postman5.out
+postman.exe < data/postman6.in > data/postman6.out
+postman.exe < data/postman7.in > data/postman7.out
+postman.exe < data/postman8.in > data/postman8.out
+postman.exe < data/postman9.in > data/postman9.out
+postman.exe < data/postman10.in > data/postman10.out

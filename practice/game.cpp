@@ -47,6 +47,7 @@ void lose();
 
 int main()
 {
+	system("color 74");
 	system("chcp 65001");
 	SetConsoleTitle("Buckshot Roulette");
 	setsize(104, 30);
@@ -660,15 +661,13 @@ void round3()
 
 int AI()
 {
-	/*
-    char c;
-    while(1)
-    {
-        c = getch();
-        if(c == '-' || '0' <= c && c <= '0' + x.size() - 1) break;
-    }
-    return c == '-' ? -1 : c - '0'; 
-	*/
+    // char c;
+    // while(1)
+    // {
+    //     c = getch();
+    //     if(c == '-' || '0' <= c && c <= '0' + x.size() - 1) break;
+    // }
+    // return c == '-' ? -1 : c - '0'; 
 	
 	int num1=0,num0=0;
 	for(int i=0;i<q.size();i++)
