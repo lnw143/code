@@ -24,7 +24,6 @@
 #include<unordered_set>
 #include<utility>
 #include<atcoder/all>
-#define endl '\n'
 
 using namespace std;
 using namespace atcoder;
@@ -56,9 +55,38 @@ const int
 ;
 using mint = static_modint<P>;
 
-void solve();
+#define MULTITEST 0
+int n,d,a[N + 2][N + 2],f[N + 2][N + 2];
+bool work(int k) {
+	int ans=0;
+	for(int i=1; i<=n; ++i)
+		for(int j=1; j<=n; ++j) {
+			int s=a[i][j]/d;
+			if((s+i+j+k)%2!=0) {
+				if(a[i][j]<0) --s;
+				else ++s;
+			}
+			f[i][j]=s*d;
+			ans+=abs(a[i][j]-f[i][j]);
+		}
+	if(ans*2<=d*n*n) {
+		for(int i=1; i<=n; ++i,cout<<endl)
+			for(int j=1; j<=n; ++j) 
+				cout<<f[i][j]<<' ';
+		return true;
+	}
+	return false;
+}
+void solve() {
+	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
+	cout<<fixed<<setprecision(15);
+	cin>>n>>d;
+	for(int i=1; i<=n; ++i)
+		for(int j=1; j<=n; ++j)
+			cin>>a[i][j];
+	if(!work(0)) assert(work(1));
+}
 
-#define MULTITEST 1
 int main() {
 	int T=1;
 #if MULTITEST
@@ -66,10 +94,4 @@ int main() {
 #endif
 	while(T--) solve();
 	return 0;
-}
-
-void solve() {
-	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
-	cout<<fixed<<setprecision(15);
-	
 }
