@@ -58,7 +58,7 @@ using mint = static_modint<P>;
 
 void solve();
 
-#define MULTITEST 1
+#define MULTITEST 0
 int main() {
 	int T=1;
 #if MULTITEST
