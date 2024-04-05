@@ -11,62 +11,9 @@ struct Pair {
 		return x<t.x||x==t.x&&y<t.y;
 	}
 };
-namespace FAST_IO {
-	const int BUF(1<<20);
-	char buf[BUF],*p1=buf,*p2=buf;
-	char pbuf[BUF],*p=pbuf;
-	char gc() {
-		return p1==p2&&(p2=(p1=buf)+fread(buf,1,BUF,stdin),p1==p2)?EOF:*p1++;
-	}
-	void pc(char c) {
-		*p++=c;
-		if(p-pbuf==BUF) fwrite(pbuf,1,BUF,stdout),p=pbuf;
-	}
-	void flush() {
-		fwrite(pbuf,1,p-pbuf,stdout);
-		p=pbuf;
-	}
-	template<typename T> void read(T &x) {
-		x=0;
-		static char c;
-		T f=1;
-		do {
-			c=gc();
-			if(c=='-') f=-f;
-		} while(!isdigit(c));
-		do {
-			x=(x<<3)+(x<<1)+(c^48);
-			c=gc();
-		} while(isdigit(c));
-		x*=f;
-	}
-	template<typename T,typename ...Args> void read(T &x,Args &...args) {
-		read(x);
-		read(args...);
-	}
-	template<typename T> void write(T x) {
-		if(x<0) {
-			pc('-');
-			x=-x;
-		}
-		static char stk[1<<8],*tp;
-		tp=stk;
-		do *tp++=(x%10)^48; while(x/=10);
-		while(tp!=stk) pc(*--tp);
-	}
-	void write(char c) { pc(c); }
-	template<typename T,typename ...Args> void write(T x,Args ...args) {
-		write(x);
-		write(args...);
-	}
-	struct TMP { ~TMP() { flush(); } } tmp;
-};
-using FAST_IO::read;
-using FAST_IO::write;
-using FAST_IO::flush;
 int n,m,k,w[N + 2],f[N + 2][S + 2],g[S + 2],h[S + 2];
 int em,e[M * 2 + 2],ls[N + 2],nx[M * 2 + 2],cs[M * 2 + 2];
-bool bz[S + 2],vis[N + 2];
+bool bz[S + 2];
 void insert(int u,int v,int w) {
 	e[++em]=v;
 	nx[em]=ls[u];
@@ -98,7 +45,7 @@ namespace heap {
 		int u=1;
 		while((u<<1)<=sz&&hp[u<<1]<hp[u]||(u<<1|1)<=sz&&hp[u<<1|1]<hp[u]) {
 			int v=u<<1;
-			if((v|1)<=sz&&hp[v]<hp[v|1]) v|=1;
+			if((v|1)<=sz&&hp[v|1]<hp[v]) v|=1;
 			swap(hp[u],hp[v]);
 			u=v;
 		}
@@ -107,30 +54,24 @@ namespace heap {
 }
 void dij(const int s) {
 	using namespace heap;
-	sz=0;
 	for(int i=1; i<=n; ++i)
-		push(Pair(f[i][s],i)),vis[i]=false;
-	for(int i=0; i<n&&sz>0;) {
+		push(Pair(f[i][s],i));
+	while(sz) {
 		const auto [d,u]=pop();
 		if(d!=f[u][s]) continue;
-		++i;
-		vis[u]=true;
 		for(int j=ls[u],v=e[j],w=cs[j]; j; j=nx[j],v=e[j],w=cs[j])
-			if(!vis[v]&&d+w<f[v][s]) {
+			if(d+w<f[v][s]) {
 				f[v][s]=d+w;
 				push(Pair(f[v][s],v));
 			}
 	}
-	printf("---\n");
 	return ;
 }
 int main() {
-	freopen("travel.in","r",stdin);
-	freopen("travel.out","w",stdout);
-	read(n,m,k);
+	scanf("%d%d%d",&n,&m,&k);
 	for(int i=1; i<=m; ++i) {
 		int u,v,w;
-		read(u,v,w);
+		scanf("%d%d%d",&u,&v,&w);
 		insert(u,v,w);
 		insert(v,u,w);
 	}
@@ -143,7 +84,7 @@ int main() {
 		f[i][w[i]]=0;
 	}
 	for(int i=1; i<s; ++i) {
-		for(int j=i; (j<<1)>=i; j=(j-1)&i)
+		for(int j=i; j; j=(j-1)&i)
 			for(int l=1; l<=n; ++l)
 				f[l][i]=min(f[l][i],f[l][j]+f[l][i^j]);
 		dij(i);
@@ -160,9 +101,9 @@ int main() {
 	for(int i=1; i<s; ++i) {
 		h[i]=g[i];
 		if(!bz[i]) continue;
-		for(int j=i; (j<<1)>=i; j=(j-1)&i)
+		for(int j=i; j; j=(j-1)&i)
 			h[i]=min(h[i],h[j]+h[j^i]);
 	}
-	write(h[s-1]==inf?-1:h[s-1]);
+	printf("%d",h[s-1]==inf?-1:h[s-1]);
 	return 0;
 }
