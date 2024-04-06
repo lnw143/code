@@ -52,7 +52,7 @@ db randpr(db l=0,db r=1) {
 // #define FILENAME "a"
 
 const int
-	N = 0,
+	N = 1e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -60,8 +60,38 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
+int n,c[N + 2];
+ll sz[N + 2],f[N + 2];
+vector<int> e[N + 2];
+void dfs(int u,int fa) {
+	sz[u]=c[u];
+	for(auto v : e[u])
+		if(v!=fa) {
+			dfs(v,u);
+			sz[u]+=sz[v];
+			f[u]+=sz[v]+f[v];
+		}
+}
+void dp(int u,int fa) {
+	for(auto v : e[u])
+		if(v!=fa) {
+			f[v]=f[u]+sz[1]-sz[v]*2;
+			dp(v,u);
+		}
+}
 void _main() {
-
+	cin>>n;
+	for(int i=1; i<n; ++i) {
+		int u,v;
+		cin>>u>>v;
+		e[u].ebk(v);
+		e[v].ebk(u);
+	}
+	for(int i=1; i<=n; ++i)
+		cin>>c[i];
+	dfs(1,1);
+	dp(1,1);
+	cout<<*min_element(f+1,f+n+1);
 }
 
 int main() {

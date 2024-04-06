@@ -60,8 +60,11 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
+int n;
 void _main() {
-
+	cin>>n;
+	for(int i=1; i<=n; ++i)
+		cout<<(i%3?'o':'x');
 }
 
 int main() {

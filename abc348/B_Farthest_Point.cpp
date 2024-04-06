@@ -52,7 +52,7 @@ db randpr(db l=0,db r=1) {
 // #define FILENAME "a"
 
 const int
-	N = 0,
+	N = 1e2,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -60,8 +60,24 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
-void _main() {
+int n,x[N + 2],y[N + 2];
 
+int sqr(int x) {
+	return x*x;
+}
+void _main() {
+	cin>>n;
+	for(int i=1; i<=n; ++i)
+		cin>>x[i]>>y[i];
+	for(int i=1; i<=n; ++i) {
+		int mx=0,v=0;
+		for(int j=1; j<=n; ++j)
+			if(sqr(x[i]-x[j])+sqr(y[i]-y[j])>mx) {
+				mx=sqr(x[i]-x[j])+sqr(y[i]-y[j]);
+				v=j;
+			}
+		cout<<v<<endl;
+	}
 }
 
 int main() {

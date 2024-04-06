@@ -52,16 +52,58 @@ db randpr(db l=0,db r=1) {
 // #define FILENAME "a"
 
 const int
-	N = 0,
-	M = 0,
+	N = 3e2,
+	M = 2e2,
 	K = 0,
 	Q = 0,
 	S = 0,
 	P = 998244353// (int)1e9 + 7
 ;
 
-void _main() {
+const vector<pair<int,int>> way {{0,1},{1,0},{0,-1},{-1,0}};
 
+int h,w,n,e[M + 2][M + 2],dis[M + 2][M + 2];
+char a[M + 2][M + 2];
+void dij() {
+	priority_queue<tuple<int,int,int>> hp;
+	for(int i=1; i<=h; ++i)
+		for(int j=1; j<=w; ++j)
+			if(a[i][j]=='S')
+				dis[i][j]=e[i][j],
+				hp.emplace(e[i][j],i,j);
+			else 
+				dis[i][j]=-1;
+	while(!hp.empty()) {
+		const auto [w_,u,v]=hp.top();
+		hp.pop();
+		if(dis[u][v]!=w_) continue;
+		for(const auto& [i,j] : way) {
+			int x=u+i,y=v+j;
+			if(x<1||y<1||x>h||y>w||a[x][y]=='#') continue;
+			if(dis[u][v]-1>dis[x][y]) {
+				dis[x][y]=max(e[x][y],dis[u][v]-1);
+				hp.emplace(dis[x][y],x,y);
+			}
+		}
+	}
+}
+void _main() {
+	cin>>h>>w;
+	for(int i=1; i<=h; ++i)
+		cin>>(a[i]+1);
+	cin>>n;
+	for(int i=1; i<=n; ++i) {
+		int r,c,w;
+		cin>>r>>c>>w;
+		e[r][c]=max(e[r][c],w);
+	}
+	dij();
+	for(int i=1; i<=h; ++i)
+		for(int j=1; j<=w; ++j)
+			if(a[i][j]=='T') {
+				cout<<(dis[i][j]>=0?"Yes":"No");
+				break;
+			}
 }
 
 int main() {

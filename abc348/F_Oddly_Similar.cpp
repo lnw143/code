@@ -52,16 +52,32 @@ db randpr(db l=0,db r=1) {
 // #define FILENAME "a"
 
 const int
-	N = 0,
-	M = 0,
+	N = 2e3,
+	M = 1e3,
 	K = 0,
 	Q = 0,
 	S = 0,
 	P = 998244353// (int)1e9 + 7
 ;
 
+char sss;
+int n,m,a[N + 2][N + 2],sum=0;
+bitset<N> bs[N + 2][M],ans;
+char ttt;
 void _main() {
-
+	cin>>n>>m;
+	for(int i=1; i<=n; ++i)
+		for(int j=1; j<=m; ++j)
+			cin>>a[i][j];
+	for(int i=1; i<=n; ++i) {
+		ans.reset();
+		for(int j=1; j<=m; ++j)
+			ans^=bs[j][a[i][j]];
+		sum+=ans.count();
+		for(int j=1; j<=m; ++j)
+			bs[j][a[i][j]][i-1]=1;
+	}
+	cout<<sum;
 }
 
 int main() {

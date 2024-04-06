@@ -49,19 +49,48 @@ db randpr(db l=0,db r=1) {
 }
 
 // #define MULTITEST
-// #define FILENAME "a"
+#define FILENAME "a"
 
 const int
-	N = 0,
-	M = 0,
-	K = 0,
-	Q = 0,
-	S = 0,
+	N = 1e5,
+	M = 1,
+	K = 1,
+	Q = 1,
+	S = 1,
 	P = 998244353// (int)1e9 + 7
 ;
 
+int n,a[N + 2],pre[N + 2],nxt[N + 2],cnt[3];
 void _main() {
-
+	cin>>n;
+	for(int i=1; i<=n; ++i)
+		cin>>a[i];
+	if(a[1]==a[n]) return cout<<"no",void();
+	for(int i=1; i<n; ++i)
+		if(a[i]==a[i+1])
+			return cout<<"no",void();
+	set<int> st;
+	for(int i=1; i<=n; ++i)
+		st.emplace(a[i]),++cnt[a[i]];
+	if(st.size()<3)
+		return cout<<"no",void();
+	pre[1]=n;
+	nxt[n]=1;
+	for(int i=1; i<n; ++i)
+		pre[i+1]=i,nxt[i]=i+1;
+	int u=1,m=n;
+	cout<<"yes\n";
+	while(m>3) {
+		if(cnt[a[u]]>1&&a[pre[u]]!=a[nxt[u]]) {
+			cout<<pre[u]<<' '<<nxt[u]<<endl;
+			nxt[pre[u]]=nxt[u];
+			pre[nxt[u]]=pre[u];
+			--cnt[a[u]];
+			--m;
+		}
+		u=nxt[u];
+	}
+	return ;
 }
 
 int main() {

@@ -52,7 +52,7 @@ db randpr(db l=0,db r=1) {
 // #define FILENAME "a"
 
 const int
-	N = 0,
+	N = 2e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -60,8 +60,46 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
+int n,v[N + 2];
+pair<ll,int> a[N + 2];
 void _main() {
-
+	cin>>n;
+	for(int i=1; i<=n; ++i) {
+		cin>>a[i].second>>a[i].first;
+		v[i]=a[i].second;
+	}
+	sort(a+1,a+n+1);
+	sort(v+1,v+n+1);
+	int k=1;
+	for(int i=2; i<=n; ++i)
+		if(a[i].second-a[i].first>a[k].second-a[k].first)
+			k=i;
+	ll ans=a[k].second-a[k].first;
+	cout<<ans<<endl;
+	priority_queue<int> hp;
+	set<pair<ll,int>> st;
+	for(int i=1; i<k; ++i)
+		hp.emplace(a[i].second);
+	for(int i=k+1; i<=n; ++i)
+		st.emplace(a[i].second-a[i].first,i);
+	for(int i=2; i<=n; ++i) {
+		assert(hp.size()+st.size()==n-i+1);
+		if(!st.empty()&&(hp.empty()||(*st.begin()).first+a[k].first>=hp.top())) {
+			int k_=k;
+			auto [val,pos]=*st.rbegin();
+			st.erase(*st.rbegin());
+			ans+=val+a[k].first;
+			k=pos;
+			for(int i=k_+1; i<k; ++i)
+				st.erase(mkp(a[i].second-a[i].first,i)),
+				hp.emplace(a[i].second);
+			cout<<ans<<endl;
+		} else {
+			ans+=hp.top();
+			hp.pop();
+			cout<<ans<<endl;
+		}
+	}
 }
 
 int main() {

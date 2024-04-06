@@ -49,10 +49,10 @@ db randpr(db l=0,db r=1) {
 }
 
 // #define MULTITEST
-// #define FILENAME "a"
+#define FILENAME "b"
 
 const int
-	N = 0,
+	N = 5e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -60,8 +60,15 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
+int n,t[N + 2];
+ll ans;
 void _main() {
-
+	cin>>n;
+	for(int i=n; i>=1; --i) {
+		if(3*i-1<=n) t[i]=t[3*i-1]+1;
+		ans+=(2*i-1)<<t[i];
+	}
+	cout<<ans;
 }
 
 int main() {

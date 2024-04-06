@@ -60,8 +60,20 @@ const int
 	P = 998244353// (int)1e9 + 7
 ;
 
+map<int,int> mp;
+int n;
 void _main() {
-
+	cin>>n;
+	for(int i=1; i<=n; ++i) {
+		int x,y;
+		cin>>y>>x;
+		if(mp.count(x)) mp[x]=min(mp[x],y);
+		else mp[x]=y;
+	}
+	int ans=0;
+	for(auto [u,v]:mp)
+		ans=max(ans,v);
+	cout<<ans;
 }
 
 int main() {

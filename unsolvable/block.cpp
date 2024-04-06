@@ -114,8 +114,8 @@ namespace sub1 {
 	}
 }
 int main() {
-	// freopen("data/unsolvable10.in","r",stdin);
-	// freopen("unsolvable.out","w",stdout);
+	freopen("unsolvable34.in","r",stdin);
+	freopen("unsolvable.out","w",stdout);
 	scanf("%d",&n);
 	for(int i=1; i<=n; ++i) {
 		scanf("%s",ch);
