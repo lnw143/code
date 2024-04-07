@@ -1,3 +1,5 @@
+#line 1 "templates.cpp"
+#pragma GCC optimize("Ofast,unroll-loops")
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -34,7 +36,15 @@ using ll = long long;
 using llu = long long unsigned;
 using db = double;
 using ldb = long double;
+
+template<typename T> constexpr T inf = 0;
+template<> constexpr int inf<int> = 1e9;
+template<> constexpr ll inf<ll> = 1e18;
+template<> constexpr db inf<db> = 1e18;
+template<> constexpr ldb inf<ldb> = 1e18;
+
 template<typename T> using heap = priority_queue<T,vector<T>,greater<T>>;
+template<typename T> using big_heap = priority_queue<T>;
 
 #define clock() chrono::steady_clock::now()
 const auto start_time = clock();
@@ -49,7 +59,9 @@ db randpr(db l=0,db r=1) {
 }
 
 // #define MULTITEST
-// #define FILENAME "a"
+// #define FILE_IO_NAME ""
+
+#line 1 "main.cpp"
 
 const int
 	N = 0,
@@ -65,9 +77,9 @@ void _main() {
 }
 
 int main() {
-#if defined(FILENAME) && !defined(CPH)
-	freopen(FILENAME".in","r",stdin);
-	freopen(FILENAME".out","w",stdout);
+#if defined(FILE_IO_NAME) && !defined(CPH)
+	freopen(FILE_IO_NAME".in","r",stdin);
+	freopen(FILE_IO_NAME".out","w",stdout);
 #endif
 	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
 	cout<<fixed<<setprecision(15);
