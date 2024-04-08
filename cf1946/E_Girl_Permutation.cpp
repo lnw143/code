@@ -63,26 +63,50 @@ db randpr(db l=0,db r=1) {
 	return uniform_real_distribution<db>(l,r)(rnd);
 }
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
 #line 1 "main.cpp"
 
 const int
-	N = 0,
+	N = 2e5,
 	M = 0,
 	K = 0,
 	Q = 0,
 	S = 0,
-	P = 998244353// 1e9 + 7
+	P = 1e9 + 7
 ;
 
-void _main() {
+ll fac[N + 2],inv[N + 2],ifac[N + 2];
 
+ll C(ll n,ll m) {
+	return fac[n]*ifac[m]%P*ifac[n-m]%P;
+}
+
+void _main() {
+	int n,m,k;
+	cin>>n>>m>>k;
+	vec<int> p(m),s(k);
+	for(auto &i : p)
+		cin>>i;
+	for(auto &i : s)
+		cin>>i;
+	if(p[0]!=1||s.back()!=n||p.back()!=s[0]) return cout<<0<<endl,void();
+	ll ans=C(n-1,s[0]-1);
+	for(int i=1; i<p.size(); ++i) 
+		ans=ans*fac[p[i]-p[i-1]-1]%P*C(p[i]-2,p[i]-p[i-1]-1)%P;
+	for(int i=1; i<s.size(); ++i)
+		ans=ans*fac[s[i]-s[i-1]-1]%P*C(n-s[i-1]-1,s[i]-s[i-1]-1)%P;
+	cout<<ans<<endl;
 }
 
 void _init() {
-
+	fac[0]=fac[1]=inv[1]=ifac[1]=ifac[0]=1;
+	for(int i=2; i<=N; ++i) {
+		fac[i]=fac[i-1]*i%P;
+		inv[i]=(P-P/i)*inv[P%i]%P;
+		ifac[i]=ifac[i-1]*inv[i]%P;
+	}
 }
 
 int main() {

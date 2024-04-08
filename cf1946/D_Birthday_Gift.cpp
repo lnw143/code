@@ -63,7 +63,7 @@ db randpr(db l=0,db r=1) {
 	return uniform_real_distribution<db>(l,r)(rnd);
 }
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
 #line 1 "main.cpp"
@@ -74,15 +74,38 @@ const int
 	K = 0,
 	Q = 0,
 	S = 0,
-	P = 998244353// 1e9 + 7
+	P = 998244353// (int)1e9 + 7
 ;
 
 void _main() {
-
-}
-
-void _init() {
-
+	int n,x,m=0,ans=-1;
+	cin>>n>>x;
+	vec<int> a(n);
+	++x;
+	for(auto & i : a)
+		cin>>i,m^=i;
+	for(int i=30; i>=0; --i) {
+		const int k = 1 << i;
+		if((m&k)&&(x&k)) continue;
+		else if((m&k)&&!(x&k)) break;
+		else {
+			int f=0;
+			vec<int> b;
+			for(const auto & i : a) {
+				if(f) b.back()^=i;
+				else b.pbk(i);
+				if(i&k) f^=1;
+			}
+			if(!(m&k)&&(x&k))
+				ans=max(ans,(int)b.size());
+			else {
+				assert(!(m&k)&&!(x&k));
+				a=b;
+			}
+		}
+	}
+	cout<<ans<<endl;
+	return ;
 }
 
 int main() {
@@ -92,7 +115,6 @@ int main() {
 #endif
 	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
 	cout<<fixed<<setprecision(15);
-	_init();
 	int T=1;
 #if defined(MULTITEST)
 	cin>>T;
