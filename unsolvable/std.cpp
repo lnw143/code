@@ -6,7 +6,7 @@
 #include<vector>
 using namespace std;
 using ll = long long;
-constexpr int N = 1e6, A = 26, B = 100, P = 1e9 + 7;
+constexpr int N = 1e6, A = 26, P = 1e9 + 7;
 int n,m,b,ans,u[N + 2],v[N + 2];
 char ch[N + 2];
 string s[N + 2];
@@ -75,26 +75,34 @@ namespace sub0 {
 }
 namespace sub1 {
 	namespace trie {
-		int tot,tr[N * 2 + 2][A + 2];
+		int tot,now;
+		vector<vector<int>> tr(1,vector<int>(A + 2,0));
+		vector<int> cnt(1,0);
 		int son(int u,int c) {
-			if(!tr[u][c-'a']) tr[u][c-'a']=++tot;
+			if(tot>=now) {
+				now=tot*2;
+				tr.reserve(now);
+				cnt.reserve(now);
+			}
+			if(!tr[u][c-'a']) {
+				tr[u][c-'a']=++tot;
+				tr.push_back(vector<int>(A + 2,0));
+				cnt.push_back(0);
+			}
 			return tr[u][c-'a'];
 		}
 	}
-	map<ll,int> mp[B + 2][B + 2];
 	void solve(const int *u,int l1,const int *v, int l2) {
-		const ll w = m*2+1;
 		for(int i=1; i<=l1; ++i) {
 			const string &t=s[u[i]];
 			int pre=0;
 			for(int j=0; j<t.size(); ++j) {
 				pre=trie::son(pre,t[j]);
-				int suf=0;
-				for(int k=1; j+k<t.size(); ++k) {
-					suf=trie::son(suf,t[t.size()-k]);
-					ll hash=pre*w+suf;
-					addAns(mp[j+1][k][hash]);
-					++mp[j+1][k][hash];
+				int now=trie::son(pre,'z'+1);
+				for(int k=0; k<t.size(); ++k) {
+					now=trie::son(now,t[t.size()-k-1]);
+					addAns(trie::cnt[now]);
+					++trie::cnt[now];
 				}
 			}
 		}
@@ -103,19 +111,16 @@ namespace sub1 {
 			int pre=0;
 			for(int j=0; j<b; ++j) {
 				pre=trie::son(pre,t[j]);
-				int suf=0;
-				for(int k=1; j+k<b; ++k) {
-					suf=trie::son(suf,t[t.size()-k]);
-					ll hash=pre*w+suf;
-					addAns(mp[j+1][k][hash]);
+				int now=trie::son(pre,'z'+1);
+				for(int k=0; k<b; ++k) {
+					now=trie::son(now,t[t.size()-k-1]);
+					addAns(trie::cnt[now]);
 				}
 			}
 		}
 	}
 }
 int main() {
-	freopen("unsolvable34.in","r",stdin);
-	freopen("unsolvable.out","w",stdout);
 	scanf("%d",&n);
 	for(int i=1; i<=n; ++i) {
 		scanf("%s",ch);

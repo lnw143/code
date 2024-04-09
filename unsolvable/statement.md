@@ -1,6 +1,6 @@
 ```text
 Time Limit : 2s
-Memory Limit : 512 MB
+Memory Limit : 1024 MB
 File IO : unsolvable.in/.out
 Enable O2
 ```
