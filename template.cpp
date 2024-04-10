@@ -27,6 +27,11 @@
 #include<unordered_set>
 #include<utility>
 
+#define rep(i,l,r) for(int i(l),i##End(r)； i<=i##End; ++i)
+#define rep_(i,l,r) for(int i(l),i##End(r)； i<i##End; ++i)
+#define per(i,r,l) for(int i(r),i##End(l)； i>=i##End; --i)
+#define per_(i,r,l) for(int i(r),i##End(l)； i>i##End; --i)
+
 #define pbk push_back
 #define ebk emplace_back
 #define mkp make_pair
