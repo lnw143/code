@@ -1,5 +1,3 @@
-#line 1 "templates.cpp"
-
 #pragma GCC optimize("O3,unroll-loops")
 #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
@@ -65,8 +63,6 @@ db randpr(db l=0,db r=1) {
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
-
-#line 1 "main.cpp"
 
 const int
 	N = 0,
