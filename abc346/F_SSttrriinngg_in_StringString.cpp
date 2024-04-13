@@ -27,10 +27,10 @@
 #include<unordered_set>
 #include<utility>
 
-#define rep(i,l,r) for(int i(l),i##End(r)； i<=i##End; ++i)
-#define rep_(i,l,r) for(int i(l),i##End(r)； i<i##End; ++i)
-#define per(i,r,l) for(int i(r),i##End(l)； i>=i##End; --i)
-#define per_(i,r,l) for(int i(r),i##End(l)； i>i##End; --i)
+#define rep(i,l,r) for(int i(l),i##End(r); i<=i##End; ++i)
+#define rep_(i,l,r) for(int i(l),i##End(r); i<i##End; ++i)
+#define per(i,r,l) for(int i(r),i##End(l); i>=i##End; --i)
+#define per_(i,r,l) for(int i(r),i##End(l); i>i##End; --i)
 
 #define pbk push_back
 #define ebk emplace_back
@@ -90,13 +90,17 @@ bool check(ll len) {
 		if(p.size()==0) return false;
 		int rst=p.end()-lower_bound(p.begin(),p.end(),now);
 		if(len>rst) {
-			ll rem=len-rst;
-			sum+=rem/p.size()+!!(rem%p.size());
-			now=p[rem%p.size()];
-		} else
-			now=p[p.size()-rst+len];
+			ll rem=len-rst-1;
+			sum+=1+rem/p.size();
+			now=p[rem%p.size()]+1;
+		} else if(len==rst) {
+			++sum;
+			now=0;
+		} else 
+			now=p[p.size()-rst+len-1]+1;
+		if(sum>n+(now?0:1)) return false;
 	}
-	return sum<=n;
+	return sum<=n+(now?0:1);
 }
 
 void _main() {

@@ -27,10 +27,10 @@
 #include<unordered_set>
 #include<utility>
 
-#define rep(i,l,r) for(int i(l),i##End(r)； i<=i##End; ++i)
-#define rep_(i,l,r) for(int i(l),i##End(r)； i<i##End; ++i)
-#define per(i,r,l) for(int i(r),i##End(l)； i>=i##End; --i)
-#define per_(i,r,l) for(int i(r),i##End(l)； i>i##End; --i)
+#define rep(i,l,r) for(int i(l),i##End(r); i<=i##End; ++i)
+#define rep_(i,l,r) for(int i(l),i##End(r); i<i##End; ++i)
+#define per(i,l,r) for(int i(r),i##End(l); i>=i##End; --i)
+#define per_(i,l,r) for(int i(r),i##End(l); i>i##End; --i)
 
 #define pbk push_back
 #define ebk emplace_back
@@ -69,7 +69,7 @@ db randpr(db l=0,db r=1) {
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-const int
+constexpr int
 	N = 0,
 	M = 0,
 	K = 0,
@@ -87,7 +87,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && !defined(CPH)
+#if defined(FILE_IO_NAME) && ! defined(ONLINE_JUDGE)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif

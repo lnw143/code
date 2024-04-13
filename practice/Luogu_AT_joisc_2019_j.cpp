@@ -69,7 +69,7 @@ db randpr(db l=0,db r=1) {
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-constexpr int
+const int
 	N = 2e5,
 	M = N << 5,
 	K = 0,
@@ -78,16 +78,16 @@ constexpr int
 	P = 998244353// 1e9 + 7
 ;
 
-int n,a[N + 2],val[N + 2];
-ll b[N + 2],ans[N + 2];
-pair<ll,int> t[N + 2];
+int n,m,v[N + 2],c[N + 2],a[N + 2];
+ll ans[N + 2];
+pair<int,int> t[N + 2];
 
 namespace segtree {
 	int tot,rt[N + 2],sz[M],ls[M],rs[M];
 	ll tr[M];
 	void pushup(int u) {
-		sz[u]=sz[ls[u]]+sz[rs[u]];
 		tr[u]=tr[ls[u]]+tr[rs[u]];
+		sz[u]=sz[ls[u]]+sz[rs[u]];
 	}
 	int build(int l,int r) {
 		int u=++tot;
@@ -103,7 +103,7 @@ namespace segtree {
 		rs[v]=rs[u];
 		if(l==r) {
 			sz[v]=sz[u]+y;
-			tr[v]=(ll)sz[v]*val[x];
+			tr[v]=(ll)sz[v]*a[x];
 			return v;
 		}
 		int mid=l+r>>1;
@@ -112,16 +112,16 @@ namespace segtree {
 		pushup(v);
 		return v;
 	}
-	ll rnksum(int u,int l,int r,int k) {
-		if(l==r) return (ll)val[l]*k;
+	ll query(int u,int v,int l,int r,int k) {
+		if(l==r) return (ll)a[l]*k;
 		int mid=l+r>>1;
-		if(k<=sz[rs[u]]) return rnksum(rs[u],mid+1,r,k);
-		return tr[rs[u]]+rnksum(ls[u],l,mid,k-sz[rs[u]]);
+		if(k<=sz[ls[v]]-sz[ls[u]]) return query(ls[u],ls[v],l,mid,k);
+		return tr[ls[v]]-tr[ls[u]]+query(rs[u],rs[v],mid+1,r,k-sz[ls[v]]+sz[ls[u]]);
 	}
 }
 
 int id(int x) {
-	return lower_bound(val+1,val+n+1,x)-val;
+	return lower_bound(a+1,a+n+1,x,greater<int>())-a;
 }
 
 void solve(int x,int y,int u,int v) {
@@ -129,10 +129,10 @@ void solve(int x,int y,int u,int v) {
 	int mid=x+y>>1;
 	int p=0;
 	ans[mid]=-inf<ll>;
-	rep(i,max(u,mid),v) {
+	rep(i,u,min(mid-m+1,v)) {
 		using namespace segtree;
-		ll cost=rnksum(rt[i],1,n,mid)-b[i];
-		if(cost>ans[mid]) {
+		ll cost=query(rt[i-1],rt[mid],1,n,m)-2*(c[mid]-c[i]);
+		if(cost>ans[mid])  {
 			ans[mid]=cost;
 			p=i;
 		}
@@ -142,17 +142,19 @@ void solve(int x,int y,int u,int v) {
 }
 
 void _main() {
-	cin>>n;
-	rep(i,1,n) cin>>a[i]>>b[i];
-	rep(i,1,n) t[i]=mkp(b[i],a[i]);
+	cin>>n>>m;
+	rep(i,1,n) cin>>v[i]>>c[i];
+	rep(i,1,n) t[i]=mkp(c[i],v[i]);
 	sort(t+1,t+n+1);
-	rep(i,1,n) val[i]=a[i]=t[i].second,b[i]=t[i].first;
-	sort(val+1,val+n+1);
+	rep(i,1,n) a[i]=v[i]=t[i].second,c[i]=t[i].first;
+	sort(a+1,a+n+1,greater<int>());
 	using namespace segtree;
 	rt[0]=build(1,n);
-	rep(i,1,n) rt[i]=modify(rt[i-1],1,n,id(a[i]),1);
-	solve(1,n,1,n);
-	rep(i,1,n) cout<<ans[i]<<endl;
+	rep(i,1,n) rt[i]=modify(rt[i-1],1,n,id(v[i]),1);
+	solve(m,n,1,n-m+1);
+	ll Ans=-inf<ll>;
+	rep(i,m,n) Ans=max(Ans,ans[i]);
+	cout<<Ans;
 }
 
 void _init() {
@@ -160,7 +162,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && ! defined(ONLINE_JUDGE)
+#if defined(FILE_IO_NAME) && !defined(CPH)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif

@@ -69,7 +69,7 @@ db randpr(db l=0,db r=1) {
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-constexpr int
+const int
 	N = 2e5,
 	M = N << 5,
 	K = 0,
@@ -78,76 +78,78 @@ constexpr int
 	P = 998244353// 1e9 + 7
 ;
 
-int n,a[N + 2],val[N + 2];
-ll b[N + 2],ans[N + 2];
-pair<ll,int> t[N + 2];
+int n,a[N + 2],b[N + 2],v[N + 2];
+pair<int,int> t[N + 2];
+ll ans[N + 2];
 
 namespace segtree {
-	int tot,rt[N + 2],sz[M],ls[M],rs[M];
+	int tot,sz[M],ls[M],rs[M],rt[N + 2];
 	ll tr[M];
-	void pushup(int u) {
-		sz[u]=sz[ls[u]]+sz[rs[u]];
-		tr[u]=tr[ls[u]]+tr[rs[u]];
+	void pushup(int x) {
+		sz[x]=sz[ls[x]]+sz[rs[x]];
+		tr[x]=tr[ls[x]]+tr[rs[x]];
 	}
 	int build(int l,int r) {
-		int u=++tot;
-		if(l==r) return u;
-		int mid=l+r>>1;
-		ls[u]=build(l,mid);
-		rs[u]=build(mid+1,r);
-		return u;
-	}
-	int modify(int u,int l,int r,int x,int y) {
-		int v=++tot;
-		ls[v]=ls[u];
-		rs[v]=rs[u];
-		if(l==r) {
-			sz[v]=sz[u]+y;
-			tr[v]=(ll)sz[v]*val[x];
-			return v;
+		int x=++tot;
+		if(l<r) {
+			int mid=(l+r)>>1;
+			ls[x]=build(l,mid);
+			rs[x]=build(mid+1,r);
 		}
-		int mid=l+r>>1;
-		if(x<=mid) ls[v]=modify(ls[v],l,mid,x,y);
-		else rs[v]=modify(rs[v],mid+1,r,x,y);
-		pushup(v);
-		return v;
+		return x;
 	}
-	ll rnksum(int u,int l,int r,int k) {
-		if(l==r) return (ll)val[l]*k;
-		int mid=l+r>>1;
-		if(k<=sz[rs[u]]) return rnksum(rs[u],mid+1,r,k);
-		return tr[rs[u]]+rnksum(ls[u],l,mid,k-sz[rs[u]]);
+	int modify(int x,int l,int r,int g,int f) {
+		int y=++tot;
+		ls[y]=ls[x];
+		rs[y]=rs[x];
+		if(l==r) {
+			sz[y]=sz[x]+f;
+			tr[y]=(ll)sz[y]*v[g];
+			return y;
+		}
+		int mid=(l+r)>>1;
+		if(g<=mid) ls[y]=modify(ls[y],l,mid,g,f);
+		else rs[y]=modify(rs[y],mid+1,r,g,f);
+		pushup(y);
+		return y;
+	}
+	ll rnksum(int x,int l,int r,int f) {
+		if(l==r) return (ll)v[l]*f;
+		int mid=(l+r)>>1;
+		if(f<=sz[ls[x]]) return rnksum(ls[x],l,mid,f);
+		return tr[ls[x]]+rnksum(rs[x],mid+1,r,f-sz[ls[x]]);
 	}
 }
 
 int id(int x) {
-	return lower_bound(val+1,val+n+1,x)-val;
+	return lower_bound(v+1,v+n+1,x)-v;
 }
 
-void solve(int x,int y,int u,int v) {
-	if(x>y) return ;
-	int mid=x+y>>1;
+void solve(int l,int r,int u,int v) {
+	if(l>r) return ;
+	int mid=(l+r)>>1;
 	int p=0;
-	ans[mid]=-inf<ll>;
-	rep(i,max(u,mid),v) {
+	ans[mid]=inf<ll>;
+	rep(i,max(mid,u),v) {
 		using namespace segtree;
-		ll cost=rnksum(rt[i],1,n,mid)-b[i];
-		if(cost>ans[mid]) {
+		ll cost=b[i]+rnksum(rt[i],1,n,mid);
+		if(cost<ans[mid]) {
 			ans[mid]=cost;
 			p=i;
 		}
 	}
-	solve(x,mid-1,u,p);
-	solve(mid+1,y,p,v);
+	solve(l,mid-1,u,p);
+	solve(mid+1,r,p,v);
 }
 
 void _main() {
 	cin>>n;
 	rep(i,1,n) cin>>a[i]>>b[i];
+	rep(i,1,n) v[i]=a[i];
+	sort(v+1,v+n+1);
 	rep(i,1,n) t[i]=mkp(b[i],a[i]);
 	sort(t+1,t+n+1);
-	rep(i,1,n) val[i]=a[i]=t[i].second,b[i]=t[i].first;
-	sort(val+1,val+n+1);
+	rep(i,1,n) b[i]=t[i].first,a[i]=t[i].second;
 	using namespace segtree;
 	rt[0]=build(1,n);
 	rep(i,1,n) rt[i]=modify(rt[i-1],1,n,id(a[i]),1);
@@ -160,7 +162,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && ! defined(ONLINE_JUDGE)
+#if defined(FILE_IO_NAME) && !defined(CPH)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif
