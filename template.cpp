@@ -1,5 +1,4 @@
 #pragma GCC optimize("O3,unroll-loops")
-#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include<cstdio>
 #include<cmath>
@@ -69,6 +68,9 @@ void yes(bool f) { cout<<(f?"yes":"no")<<endl; }
 void no(bool f) { yes(!f); }
 void YES(bool f) { cout<<(f?"YES":"NO")<<endl; }
 void NO(bool f) { NO(!f); }
+
+template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
+template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
 
 constexpr int
 	N = 0,
