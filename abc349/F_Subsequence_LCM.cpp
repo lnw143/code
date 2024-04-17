@@ -107,8 +107,7 @@ void _main() {
 				f[j|sta]+=f[j];
 				if(f[j|sta]>=P) f[j|sta]-=P;
 			}
-			++f[sta]%=P;
-			if(f[sta]>=P) f[sta]-=P;
+			if(++f[sta]>=P) f[sta]-=P;
 		}
 	cout<<f[k-1];
 }

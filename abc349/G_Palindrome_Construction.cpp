@@ -1,5 +1,4 @@
 #pragma GCC optimize("O3,unroll-loops")
-// #pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
 
 #include<cstdio>
 #include<cmath>
@@ -79,35 +78,49 @@ constexpr int
 ;
 
 int n,a[N + 2],ans[N * 2 + 2],fa[N * 2 + 2];
+bool bz[N + 2];
+vec<int> e[N * 2 + 2];
 
-inline int find(int x) {
-	return fa[x]==x?x:fa[x]=find(fa[x]);
-}
+int find(int x) { return fa[x]==x?x:fa[x]=find(fa[x]); }
+void unite(int x,int y) { fa[find(x)]=find(y); }
 
 void _main() {
-	return cout<<"No",void();
 	cin>>n;
 	rep(i,1,n) cin>>a[i];
 	rep(i,1,2*n) fa[i]=i;
-	rep(i,1,n) {
-		rep(j,1,a[i])
-			fa[find(i-j)]=find(i+j);
-		if(runtime()>1.9) break;
+	int l=0,r=-1;
+	rep(i,1,n)
 		if(2<=i-a[i]&&i+a[i]<n) {
-			fa[find(i-a[i]-1)]=fa[find(i+a[i]+1+n)];
-			fa[find(i-a[i]-1+n)]=fa[find(i+a[i]+1)];
+			unite(i-a[i]-1,i+a[i]+1+n);
+			unite(i-a[i]-1+n,i+a[i]+1);
 		}
+	rep(i,1,n) {
+		if(r<=i) rep(j,1,a[i]) unite(i-j,i+j);
+		rep(j,r<=i?1:min(r-i,a[l+r-i]),a[i]) unite(i-j,i+j);
+		if(runtime()>1.9) return cout<<"No",void();
+		if(i+a[i]>r) r=i+a[i],l=i-a[i];
 	}
 	rep(i,1,n)
 		if(find(i)==find(i+n))
 			return cout<<"No",void();
+		else
+			e[find(i)].ebk(find(i+n)),
+			e[find(i+n)].ebk(find(i));
+	rep(i,1,n)
+		if(2<=i-a[i]&&i+a[i]<n) {
+			e[find(i-a[i]-1)].ebk(find(i+a[i]+1));
+			e[find(i+a[i]+1)].ebk(find(i-a[i]-1));
+		}
 	cout<<"Yes"<<endl;
 	rep(i,1,n) {
-		if(!ans[find(i)]) {
-			if(ans[find(i+n)]==1) ans[find(i)]=2;
-			else ans[find(i)]=1;
+		int u=find(i);
+		if(!ans[u]) {
+			for(const auto& v : e[u]) bz[ans[v]]=true;
+			ans[u]=1;
+			while(bz[ans[u]]) ++ans[u];
+			for(const auto& v : e[u]) bz[ans[v]]=false;
 		}
-		cout<<ans[find(i)]<<' ';
+		cout<<ans[u]<<' ';
 	}
 }
 

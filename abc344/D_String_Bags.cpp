@@ -15,13 +15,9 @@ int main() {
 		for(int j=1; j<=m; ++j) {
 			string s;
 			cin>>s;
-			try {
-				for(int k=0; k<=t.size()-s.size(); ++k)
-					if(t.substr(k,s.size())==s)
-						g[k+s.size()]=min(g[k+s.size()],f[k]+1);
-			} catch(const std::exception& e) {
-				cerr << e.what() << '\n';
-			}
+			for(int k=0; k+s.size()<=t.size(); ++k)
+				if(t.substr(k,s.size())==s)
+					g[k+s.size()]=min(g[k+s.size()],f[k]+1);
 		}
 		for(int i=1; i<=t.size(); ++i)
 			f[i]=min(f[i],g[i]);

@@ -59,7 +59,8 @@ const auto start_time = clock();
 template<typename T = db> T runtime() { return chrono::duration<T>(clock()-start_time).count(); }
 
 mt19937 rnd(random_device{}());
-ll randint(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
+int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
+ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
 db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
 
 void Yes(bool f) { cout<<(f?"Yes":"No")<<endl; }
@@ -67,10 +68,41 @@ void No(bool f) { Yes(!f); }
 void yes(bool f) { cout<<(f?"yes":"no")<<endl; }
 void no(bool f) { yes(!f); }
 void YES(bool f) { cout<<(f?"YES":"NO")<<endl; }
-void NO(bool f) { NO(!f); }
+void NO(bool f) { YES(!f); }
 
 template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
 template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
+
+ll qpow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
+	return x;
+}
+
+template<int P> struct ModInt {
+  public:
+	using mint = ModInt<P>;
+	using mintp = mint&;
+
+	operator const int&() { return x; }
+
+	mint operator+(const int& t) const { return x+t>=P?x+t-P:x+t; }
+	mint operator-(const int& t) const { return x<t?x-t+P:x-t; }
+	mintp operator+=(const int& t) { return ((x+=t)>=P)&&(x-=P),(*this); }
+	mintp operator-=(const int& t) { return ((x-=t)<0)&&(x+=P),(*this); }
+
+	mint operator*(const int& t) const { return (ll)x*t%P; }
+	mintp operator*=(const int& t) { return x=(ll)x*t%P,(*this); }
+
+	ModInt():x(0) {}
+	template<typename Tp> ModInt(Tp y) {
+		if(y<0) x=y%P+P;
+		else if(y<P) x=y;
+		else x=y%P;
+	}
+  private:
+	int x;
+};
 
 constexpr int
 	N = 0,
@@ -81,14 +113,15 @@ constexpr int
 	P = 998244353// 1e9 + 7
 ;
 
-template<typename Tp> void pls(Tp &x,ll y) { x+=y; if(x>=P) x-=P; }
-template<typename Tp> void mul(Tp &x,ll y) { x=x*y%P; }
+using mint = ModInt<P>::mint;
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
 void _main() {
-
+	mint a=1,b=P-1;
+	a+=b;
+	cout<<a;
 }
 
 void _init() {
@@ -96,7 +129,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && ! defined(ONLINE_JUDGE)
+#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif
