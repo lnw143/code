@@ -91,8 +91,15 @@ template<int P> struct ModInt {
 	mintp operator+=(const int& t) { return ((x+=t)>=P)&&(x-=P),(*this); }
 	mintp operator-=(const int& t) { return ((x-=t)<0)&&(x+=P),(*this); }
 
+	mint operator++(int) { return (++x>=P)?x=0,P-1:x-1;}
+	mint operator--(int) { return (--x<0)?x=P-1,0:x+1;}
+	mintp operator++() { return (++x>=P)?x=0,(*this):(*this);}
+	mintp operator--() { return (--x<0)?x=P-1,(*this):(*this);}
+
 	mint operator*(const int& t) const { return (ll)x*t%P; }
 	mintp operator*=(const int& t) { return x=(ll)x*t%P,(*this); }
+
+	int v() { return x; }
 
 	ModInt():x(0) {}
 	template<typename Tp> ModInt(Tp y) {
@@ -119,9 +126,7 @@ using mint = ModInt<P>::mint;
 // #define FILE_IO_NAME ""
 
 void _main() {
-	mint a=1,b=P-1;
-	a+=b;
-	cout<<a;
+
 }
 
 void _init() {
