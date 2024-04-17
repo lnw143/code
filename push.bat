@@ -3,8 +3,8 @@ chcp 65001 > nul
 cd /d D:\code
 git status
 echo Sure?
-git add .
 pause >nul
+git add .
 git commit -m "%date% %time% By lnw143"
 git push
 pause
