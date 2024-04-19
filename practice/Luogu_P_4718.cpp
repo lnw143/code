@@ -39,12 +39,9 @@
 using namespace std;
 
 using ll = long long;
-using ull = long long unsigned;
-using uint = unsigned int;
+using llu = long long unsigned;
 using db = double;
 using ldb = long double;
-using i128 = __int128;
-using ui128 = unsigned __int128;
 
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
@@ -78,7 +75,7 @@ template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true
 
 ll qpow(ll a,ll n,ll p) {
 	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
 	return x;
 }
 

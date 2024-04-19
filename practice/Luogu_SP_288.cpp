@@ -39,12 +39,9 @@
 using namespace std;
 
 using ll = long long;
-using ull = long long unsigned;
-using uint = unsigned int;
+using llu = long long unsigned;
 using db = double;
 using ldb = long double;
-using i128 = __int128;
-using ui128 = unsigned __int128;
 
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
@@ -78,7 +75,7 @@ template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true
 
 ll qpow(ll a,ll n,ll p) {
 	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	for(; n; n>>=1,a=(__int128)a*a%p) if(n&1) x=(__int128)x*a%p;
 	return x;
 }
 
@@ -125,11 +122,29 @@ constexpr int
 
 using mint = ModInt<P>::mint;
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
 void _main() {
-
+	ll n;
+	cin>>n;
+	if(n<3||n%2==0) return YES(n==2);
+	ll u=n-1,t=0;
+	while(u%2==0) u/=2,++t;
+	rep_(i,0,8) {
+		ll a=randll(2,n-1),v=qpow(a,u,n);
+		if(v==1) continue;
+		bool f=false;
+		rep_(i,0,t) {
+			if(v==n-1) {
+				f=true;
+				break;
+			}
+			v=(__int128)v*v%n;
+		}
+		if(!f) return NO();
+	}
+	YES();
 }
 
 void _init() {

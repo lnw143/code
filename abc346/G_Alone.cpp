@@ -39,12 +39,9 @@
 using namespace std;
 
 using ll = long long;
-using ull = long long unsigned;
-using uint = unsigned int;
+using llu = long long unsigned;
 using db = double;
 using ldb = long double;
-using i128 = __int128;
-using ui128 = unsigned __int128;
 
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
@@ -78,7 +75,7 @@ template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true
 
 ll qpow(ll a,ll n,ll p) {
 	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
 	return x;
 }
 
@@ -115,8 +112,8 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
-	M = 0,
+	N = 2e5,
+	M = N << 2,
 	K = 0,
 	Q = 0,
 	S = 0,
@@ -126,10 +123,55 @@ constexpr int
 using mint = ModInt<P>::mint;
 
 // #define MULTITEST
-// #define FILE_IO_NAME ""
+#define FILE_IO_NAME ""
+
+int n,a[N + 2],l[N + 2],r[N + 2],p[N + 2];
+vector<tuple<int,int,int>> e[N + 2];
+
+namespace segtree {
+#define mid ((l+r)>>1)
+#define ls (u<<1)
+#define rs (ls|1)
+#define li ls,l,mid
+#define ri rs,mid+1,r
+	int tr[M],t[M];
+	void pushup(int u,int l,int r) { tr[u]=t[u]?r-l+1:tr[ls]+tr[rs]; }
+	void modify(int u,int l,int r,int x,int y,int z) {
+		if(r<x||y<l) return ;
+		if(x<=l&&r<=y) {
+			t[u]+=z;
+			if(l<r) pushup(u,l,r);
+			else tr[u]=t[u]?1:0;
+			return ;
+		}
+		modify(li,x,y,z);
+		modify(ri,x,y,z);
+		pushup(u,l,r);
+	}
+}
 
 void _main() {
-
+	cin>>n;
+	rep(i,1,n) cin>>a[i];
+	rep(i,1,n) {
+		l[i]=p[a[i]]+1;
+		p[a[i]]=i;
+	}
+	rep(i,1,n) p[i]=n+1;
+	per(i,1,n) {
+		r[i]=p[a[i]]-1;
+		p[a[i]]=i;
+	}
+	rep(i,1,n) {
+		e[l[i]].ebk(i,r[i],1);
+		e[i+1].ebk(i,r[i],-1);
+	}
+	ll ans=0;
+	rep(i,1,n) {
+		for(auto [u,v,w] : e[i]) segtree::modify(1,1,n,u,v,w);
+		ans+=segtree::tr[1];
+	}
+	cout<<ans;
 }
 
 void _init() {

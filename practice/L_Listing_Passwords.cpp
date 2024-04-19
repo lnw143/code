@@ -39,12 +39,9 @@
 using namespace std;
 
 using ll = long long;
-using ull = long long unsigned;
-using uint = unsigned int;
+using llu = long long unsigned;
 using db = double;
 using ldb = long double;
-using i128 = __int128;
-using ui128 = unsigned __int128;
 
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
@@ -66,19 +63,19 @@ int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
 ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
 db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
 
-void Yes(bool f=true) { cout<<(f?"Yes":"No")<<endl; }
-void No(bool f=true) { Yes(!f); }
-void yes(bool f=true) { cout<<(f?"yes":"no")<<endl; }
-void no(bool f=true) { yes(!f); }
-void YES(bool f=true) { cout<<(f?"YES":"NO")<<endl; }
-void NO(bool f=true) { YES(!f); }
+void Yes(bool f) { cout<<(f?"Yes":"No")<<endl; }
+void No(bool f) { Yes(!f); }
+void yes(bool f) { cout<<(f?"yes":"no")<<endl; }
+void no(bool f) { yes(!f); }
+void YES(bool f) { cout<<(f?"YES":"NO")<<endl; }
+void NO(bool f) { YES(!f); }
 
 template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
 template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
 
 ll qpow(ll a,ll n,ll p) {
 	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
 	return x;
 }
 
@@ -115,12 +112,13 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
+	N = 1e6,
+	logN = 20,
 	M = 0,
 	K = 0,
 	Q = 0,
 	S = 0,
-	P = 998244353// 1e9 + 7
+	P = 1e9 + 7
 ;
 
 using mint = ModInt<P>::mint;
@@ -128,8 +126,44 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void _main() {
+int n,m,fa[logN][N * 2 + 2],ans[N * 2 + 2];
+char s[N + 2];
 
+int find(int f,int u) { return fa[f][u]==u?u:fa[f][u]=find(f,fa[f][u]); }
+void unite(int f,int u,int v) {
+	if(f<0||find(f,u)==find(f,v)) return ;
+	fa[f][find(f,u)]=find(f,v);
+	int len=1<<f-1;
+	unite(f-1,u,v);
+	unite(f-1,u+len,v+len);
+}
+void _main() {
+	cin>>n>>m>>s+1;
+	rep_(j,0,logN) rep(i,1,n*2) fa[j][i]=i;
+	rep(i,1,n) unite(0,i,2*n-i+1);
+	rep(i,1,2*n) ans[i]=-1;
+	rep(i,1,m) {
+		int l,r;
+		cin>>l>>r;
+		int k=r-l+1;
+		int r_=2*n-r+1;
+		per(j,0,logN-1)
+			if(k&(1<<j)) {
+				unite(j,l,r_);
+				l+=1<<j;
+				r_+=1<<j;
+			}
+	}
+	rep(i,1,n) {
+		int u=find(0,i);
+		if(s[i]!='?') {
+			if(ans[u]!=-1&&ans[u]!=s[i]-'0') return cout<<0,void();
+			ans[u]=s[i]-'0';
+		}
+	}
+	int cnt=0;
+	rep(i,1,n*2) if(i==find(0,i)&&ans[i]==-1) ++cnt;
+	cout<<qpow(2,cnt,P);
 }
 
 void _init() {
