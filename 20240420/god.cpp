@@ -1,5 +1,3 @@
-#pragma GCC optimize("O3,unroll-loops")
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -34,7 +32,6 @@
 #define pbk push_back
 #define ebk emplace_back
 #define mkp make_pair
-#define mkt make_tuple
 #define endl '\n'
 
 using namespace std;
@@ -54,7 +51,7 @@ template<> constexpr db inf<db> = 1e18;
 template<> constexpr ldb inf<ldb> = 1e18;
 constexpr db eps = 1e-12;
 
-#define vec vector
+template<typename T> using vec = vector<T>;
 template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
 template<typename T> using big_heap = priority_queue<T>;
 
@@ -116,7 +113,7 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
+	N = 3e4,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -126,11 +123,34 @@ constexpr int
 
 using mint = ModInt<P>::mint;
 
-// #define MULTITEST
-// #define FILE_IO_NAME ""
+#define MULTITEST
+#define FILE_IO_NAME "god"
+
+int n,q,a[N + 2];
 
 void _main() {
-
+	cin>>n>>q;
+	int sum[2]={0,0};
+	rep(i,1,n) cin>>a[i];
+	rep(i,1,n) sum[(n^i)&1]^=a[i]-a[i-1];
+	cout<<!sum[0]<<endl;
+	int l=a[1],r=a[n];
+	rep(i,1,q) {
+		int x,op;
+		cin>>op>>x;
+		if(op==0) {
+			sum[(n^1)&1]^=l^(l-x);
+			++n;
+			sum[(n^1)&1]^=x;
+			l=x;
+		} else {
+			swap(sum[0],sum[1]);
+			++n;
+			sum[0]^=x-r;
+			r=x;
+		}
+		cout<<!sum[0]<<endl;
+	}
 }
 
 void _init() {
@@ -138,7 +158,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
+#if defined(FILE_IO_NAME) && !defined(CPH)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif

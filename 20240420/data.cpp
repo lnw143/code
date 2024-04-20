@@ -34,7 +34,6 @@
 #define pbk push_back
 #define ebk emplace_back
 #define mkp make_pair
-#define mkt make_tuple
 #define endl '\n'
 
 using namespace std;
@@ -54,7 +53,7 @@ template<> constexpr db inf<db> = 1e18;
 template<> constexpr ldb inf<ldb> = 1e18;
 constexpr db eps = 1e-12;
 
-#define vec vector
+template<typename T> using vec = vector<T>;
 template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
 template<typename T> using big_heap = priority_queue<T>;
 
@@ -130,7 +129,7 @@ using mint = ModInt<P>::mint;
 // #define FILE_IO_NAME ""
 
 void _main() {
-
+	int n=1e5;
 }
 
 void _init() {

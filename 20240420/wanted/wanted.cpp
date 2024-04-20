@@ -1,5 +1,3 @@
-#pragma GCC optimize("O3,unroll-loops")
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -116,8 +114,9 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
-	M = 0,
+	N = 1e5,
+	logN = 19,
+	M = N << 2,
 	K = 0,
 	Q = 0,
 	S = 0,
@@ -127,10 +126,103 @@ constexpr int
 using mint = ModInt<P>::mint;
 
 // #define MULTITEST
-// #define FILE_IO_NAME ""
+#define FILE_IO_NAME "wanted"
+
+int n,q;
+struct edge { int v,w; edge(int v,int w):v(v),w(w) {} };
+vec<edge> e[N + 2];
+ll dep[N + 2];
+
+int dfc,dfn[N + 2],Log2[N * 2 + 2];
+ll st[logN][N * 2 + 2];
+
+void dfs(int u,int p) {
+	st[0][dfn[u]=++dfc]=dep[u];
+	for(auto [v,w] : e[u])
+		if(v!=p) {
+			dep[v]=dep[u]+w;
+			dfs(v,u);
+			st[0][++dfc]=dep[u];
+		}
+}
+
+ll lcaDep(int x,int y) {
+	x=dfn[x],y=dfn[y];
+	if(x>y) swap(x,y);
+	int k=Log2[y-x+1];
+	return min(st[k][x],st[k][y-(1<<k)+1]);
+}
+
+ll dist(int x,int y) {
+	if(!x||!y) return 0;
+	return dep[x]+dep[y]-2*lcaDep(x,y);
+}
+
+namespace segtree {
+	struct sol {
+		ll val;
+		int u,v;
+		bool operator<(const sol& x) const {
+			if(val!=x.val) return val<x.val;
+			if(u!=x.u) return u<x.u;
+			return v<x.v;
+		}
+		sol(ll a,int b,int c):val(a),u(b),v(c) {}
+	};
+	struct val {
+		int a,b;
+		val operator+(const val& x) const {
+			const auto& [u,v]=x;
+#define f(a,b) sol(dist(a,b),a,b)
+			const auto [t,l,r]=max({f(a,u),f(a,v),f(b,u),f(b,v),f(a,b),f(u,v)});
+#undef f
+			return {l,r};
+		}
+	};
+	val tr[M];
+#define mid ((l+r)>>1)
+#define ls (x<<1)
+#define rs (ls|1)
+#define li ls,l,mid
+#define ri rs,mid+1,r
+	void build(int x,int l,int r) {
+		if(l==r) {
+			tr[x]={l,0};
+			return ;
+		}
+		build(li);
+		build(ri);
+		tr[x]=tr[ls]+tr[rs];
+	}
+	val query(int x,int l,int r,int u,int v) {
+		if(r<u||v<l) return {0,0};
+		if(u<=l&&r<=v) return tr[x];
+		return query(li,u,v)+query(ri,u,v);
+	}
+}
 
 void _main() {
-
+	cin>>n>>q;
+	rep_(i,1,n) {
+		int x,y,z;
+		cin>>x>>y>>z;
+		e[x].ebk(y,z);
+		e[y].ebk(x,z);
+	}
+	dfs(1,1);
+	rep_(j,1,logN)
+		rep(i,1,dfc-(1<<j)+1)
+			st[j][i]=min(st[j-1][i],st[j-1][i+(1<<(j-1))]);
+	rep(i,2,dfc)
+		Log2[i]=Log2[i>>1]+1;
+	segtree::build(1,1,n);
+	rep(i,1,q) {
+		int l1,r1,l2,r2;
+		cin>>l1>>r1>>l2>>r2;
+		using namespace segtree;
+		auto u=query(1,1,n,l1,r1),v=query(1,1,n,l2,r2);
+		cout<<max({dist(u.a,v.a),dist(u.a,v.b),dist(u.b,v.a),dist(u.b,v.b)})<<endl;
+	}
 }
 
 void _init() {
@@ -138,7 +230,7 @@ void _init() {
 }
 
 int main() {
-#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
+#if defined(FILE_IO_NAME) && !defined(CPH)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif
