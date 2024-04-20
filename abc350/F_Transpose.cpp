@@ -1,6 +1,4 @@
-#pragma GCC optimize("O3,unroll-loops")
-
-const char address_head=0;
+// #pragma GCC optimize("O3,unroll-loops")
 
 #include<cstdio>
 #include<cmath>
@@ -85,12 +83,6 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
-template<typename ...Args> string formatStr(const char * __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
-
 template<int P> struct ModInt {
   public:
 	using mint = ModInt<P>;
@@ -124,7 +116,7 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
+	N = 5e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -137,14 +129,43 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void print_memory() {
-	static char address_tail=0;
-	cerr<<"Memory:"<<((&address_tail-&address_head)>>20)<<"Mib\n";
+int l[N + 2],r[N + 2],stk[N + 2],tp;
+string s;
+
+void solve(int u,int v,bool f) {
+	if(u>v) return ;
+	// cout<<u<<' '<<v<<' '<<f<<endl;
+	if(f)
+		per(i,u,v) {
+			if(s[i]==')') {
+				solve(l[i]+1,i-1,!f);
+				i=l[i];
+				continue;
+			}
+			cout<<char(islower(s[i])?toupper(s[i]):tolower(s[i]));
+		}
+	else
+		rep(i,u,v) {
+			if(s[i]=='(') {
+				solve(i+1,r[i]-1,!f);
+				i=r[i];
+				continue;
+			}
+			cout<<s[i];
+		}
 }
 
 void _main() {
-	print_memory();
-
+	cin>>s;
+	rep_(i,0,s.size())
+		if(s[i]==')') {
+			int u=stk[tp--];
+			r[u]=i;
+			l[i]=u;
+		} else
+			if(s[i]=='(') stk[++tp]=i;
+	assert(tp==0);
+	solve(0,s.size()-1,0);
 }
 
 void _init() {

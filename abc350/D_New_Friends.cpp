@@ -1,7 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
 
-const char address_head=0;
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -85,12 +83,6 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
-template<typename ...Args> string formatStr(const char * __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
-
 template<int P> struct ModInt {
   public:
 	using mint = ModInt<P>;
@@ -124,7 +116,7 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
+	N = 2e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -137,14 +129,24 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void print_memory() {
-	static char address_tail=0;
-	cerr<<"Memory:"<<((&address_tail-&address_head)>>20)<<"Mib\n";
+int n,m,a[N + 2],fa[N + 2],sz[N + 2],ans[N + 2],x[N + 2],y[N + 2];
+
+int find(int u) { return fa[u]==u?u:fa[u]=find(fa[u]); }
+void unite(int u,int v) {
+	u=find(u),v=find(v);
+	if(u==v) return ;
+	fa[u]=v;
+	sz[v]+=sz[u];
 }
 
 void _main() {
-	print_memory();
-
+	cin>>n>>m;
+	rep(i,1,n) fa[i]=i,sz[i]=1;
+	rep(i,1,m) cin>>x[i]>>y[i],unite(x[i],y[i]);
+	rep(i,1,m) --ans[find(x[i])];
+	ll sum=0;
+	rep(i,1,n) if(find(i)==i) sum+=(ll)sz[i]*(sz[i]-1)/2+ans[i];
+	cout<<sum;
 }
 
 void _init() {

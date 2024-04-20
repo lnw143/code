@@ -1,7 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
 
-const char address_head=0;
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -85,12 +83,6 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
-template<typename ...Args> string formatStr(const char * __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
-
 template<int P> struct ModInt {
   public:
 	using mint = ModInt<P>;
@@ -137,14 +129,16 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void print_memory() {
-	static char address_tail=0;
-	cerr<<"Memory:"<<((&address_tail-&address_head)>>20)<<"Mib\n";
-}
-
 void _main() {
-	print_memory();
-
+	string s;
+	cin>>s;
+	rep(i,1,349)
+		if(i!=316) {
+			static char str[1<<6];
+			sprintf(str,"ABC%03d",i);
+			if(string(str)==s) return Yes();
+		}
+	No();
 }
 
 void _init() {

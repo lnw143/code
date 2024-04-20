@@ -1,7 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
 
-const char address_head=0;
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -85,12 +83,6 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
-template<typename ...Args> string formatStr(const char * __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
-
 template<int P> struct ModInt {
   public:
 	using mint = ModInt<P>;
@@ -124,7 +116,7 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
+	N = 1e5,
 	M = 0,
 	K = 0,
 	Q = 0,
@@ -137,14 +129,54 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void print_memory() {
-	static char address_tail=0;
-	cerr<<"Memory:"<<((&address_tail-&address_head)>>20)<<"Mib\n";
-}
+int n,m,q,t[N + 2],x[N + 2],y[N + 2],p[M + 2];
+
+map<int,int> mp,e[N + 2];
+
+int 
 
 void _main() {
-	print_memory();
-
+	
+	cin>>n>>q;
+	int cnt=0;
+	m=max(M,n/5);
+	while(cnt<m&&cnt<n) {
+		int x=randint(1,n);
+		if(!mp.count(x)) {
+			mp[x]=cnt;
+			p[cnt]=x;
+			++cnt;
+		}
+	}
+	ll lst=0;
+	rep(i,1,q) {
+		ll a,b,c;
+		cin>>a>>b>>c;
+		a=1+(a*(1+lst))%P%2;
+		b=1+(b*(1+lst))%P%n;
+		c=1+(c*(1+lst))%P%n;
+		if(a==1) {
+			if(mp.count(b)) bs[c][mp[b]]=1;
+			if(mp.count(c)) bs[b][mp[c]]=1;
+			e[b][c]=0;
+			e[c][b]=0;
+		} else {
+			auto ans=bs[b]&bs[c];
+			if(ans.any()) cout<<(lst=p[ans._Find_first()])<<endl;
+			else {
+				bool f=false;
+				rep_(i,0,K) {
+					int x=randint(1,n);
+					if(e[b].count(x)&&e[c].count(x)) {
+						cout<<(lst=x)<<endl;
+						f=true;
+						break;
+					}
+				}
+				if(!f) cout<<(lst=0)<<endl;
+			}
+		}
+	}
 }
 
 void _init() {
