@@ -129,52 +129,43 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-int n,m,q,t[N + 2],x[N + 2],y[N + 2],p[M + 2];
+int n,m,q,fa[N + 2],sz[N + 2],par[N + 2];
 
-map<int,int> mp,e[N + 2];
+vec<int> e[N + 2];
 
-int 
+int find(int x) { return fa[x]==x?x:fa[x]=find(fa[x]); }
+
+void dfs(int u,int p) {
+	par[u]=p;
+	for(auto v : e[u])
+		if(v!=p)
+			dfs(v,u);
+}
 
 void _main() {
-	
 	cin>>n>>q;
-	int cnt=0;
-	m=max(M,n/5);
-	while(cnt<m&&cnt<n) {
-		int x=randint(1,n);
-		if(!mp.count(x)) {
-			mp[x]=cnt;
-			p[cnt]=x;
-			++cnt;
-		}
-	}
 	ll lst=0;
+	rep(i,1,n) fa[i]=i,sz[i]=1;
 	rep(i,1,q) {
-		ll a,b,c;
-		cin>>a>>b>>c;
-		a=1+(a*(1+lst))%P%2;
-		b=1+(b*(1+lst))%P%n;
-		c=1+(c*(1+lst))%P%n;
-		if(a==1) {
-			if(mp.count(b)) bs[c][mp[b]]=1;
-			if(mp.count(c)) bs[b][mp[c]]=1;
-			e[b][c]=0;
-			e[c][b]=0;
+		int op,u,v;
+		cin>>op>>u>>v;
+		op=1+op*(1+lst)%P%2;
+		u=1+u*(1+lst)%P%n;
+		v=1+v*(1+lst)%P%n;
+		if(op==1) {
+			int a=find(u),b=find(v);
+			assert(a!=b);
+			e[u].ebk(v);
+			e[v].ebk(u);
+			if(sz[a]<sz[b]) swap(u,v),swap(a,b);
+			fa[b]=a;
+			sz[a]+=sz[b];
+			dfs(v,u);
 		} else {
-			auto ans=bs[b]&bs[c];
-			if(ans.any()) cout<<(lst=p[ans._Find_first()])<<endl;
-			else {
-				bool f=false;
-				rep_(i,0,K) {
-					int x=randint(1,n);
-					if(e[b].count(x)&&e[c].count(x)) {
-						cout<<(lst=x)<<endl;
-						f=true;
-						break;
-					}
-				}
-				if(!f) cout<<(lst=0)<<endl;
-			}
+			if(par[u]==par[v]&&par[u]) cout<<(lst=par[u])<<endl;
+			else if(par[u]&&par[par[u]]==v) cout<<(lst=par[u])<<endl;
+			else if(par[v]&&par[par[v]]==u) cout<<(lst=par[v])<<endl;
+			else cout<<(lst=0)<<endl;
 		}
 	}
 }
