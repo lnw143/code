@@ -1,7 +1,5 @@
 #pragma GCC optimize("O3,unroll-loops")
 
-const char address_head=0;
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -37,7 +35,7 @@ const char address_head=0;
 #define ebk emplace_back
 #define mkp make_pair
 #define mkt make_tuple
-#define endl '\n'
+#define debug(format,args...) fprintf(stderr,format,##args)
 
 using namespace std;
 
@@ -49,6 +47,7 @@ using ldb = long double;
 using i128 = __int128;
 using ui128 = unsigned __int128;
 
+char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
 template<> constexpr ll inf<ll> = 1e18;
@@ -69,11 +68,11 @@ int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
 ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
 db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
 
-void Yes(bool f=true) { cout<<(f?"Yes":"No")<<endl; }
+void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
 void No(bool f=true) { Yes(!f); }
-void yes(bool f=true) { cout<<(f?"yes":"no")<<endl; }
+void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
 void no(bool f=true) { yes(!f); }
-void YES(bool f=true) { cout<<(f?"YES":"NO")<<endl; }
+void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
 void NO(bool f=true) { YES(!f); }
 
 template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
@@ -85,7 +84,7 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
-template<typename ...Args> string formatStr(const char * __format,Args ...args) {
+template<typename ...Args> string formatStr(const char* __format,Args ...args) {
 	static char buf[1<<16];
 	sprintf(buf,__format,args...);
 	return buf;
@@ -137,13 +136,7 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void print_memory() {
-	static char address_tail=0;
-	cerr<<"Memory:"<<((&address_tail-&address_head)>>20)<<"Mib\n";
-}
-
 void _main() {
-	print_memory();
 
 }
 
@@ -151,17 +144,18 @@ void _init() {
 
 }
 
+char address_tail;
+
 int main() {
 #if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
 	freopen(FILE_IO_NAME".in","r",stdin);
 	freopen(FILE_IO_NAME".out","w",stdout);
 #endif
-	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
-	cout<<fixed<<setprecision(15);
 	_init();
 	int T=1;
+	debug("Memory:%.8lfMib\n",double(&address_tail-&address_head)/pow(2,20));
 #if defined(MULTITEST)
-	cin>>T;
+	scanf("%d",&T);
 #endif
 	while(T--) _main();
 	return 0;
