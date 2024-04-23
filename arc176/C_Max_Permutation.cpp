@@ -50,9 +50,9 @@ using ui128 = unsigned __int128;
 char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
-template<> constexpr ll inf<ll> = 1ll << 60;
-template<> constexpr i128 inf<i128> = i128(1) << 120;
-
+template<> constexpr ll inf<ll> = 1e18;
+template<> constexpr db inf<db> = 1e18;
+template<> constexpr ldb inf<ldb> = 1e18;
 constexpr db eps = 1e-12;
 
 #define vec vector
@@ -95,20 +95,22 @@ template<int P> struct ModInt {
 	using mint = ModInt<P>;
 	using mintp = mint&;
 
-	operator int() { return x; }
+	operator const int&() { return x; }
 
-	mint operator+(int t) const { return x+t>=P?x+t-P:x+t; }
-	mint operator-(int t) const { return x<t?x-t+P:x-t; }
-	mintp operator+=(int t) { return ((x+=t)>=P)&&(x-=P),(*this); }
-	mintp operator-=(int t) { return ((x-=t)<0)&&(x+=P),(*this); }
+	mint operator+(const int& t) const { return x+t>=P?x+t-P:x+t; }
+	mint operator-(const int& t) const { return x<t?x-t+P:x-t; }
+	mintp operator+=(const int& t) { return ((x+=t)>=P)&&(x-=P),(*this); }
+	mintp operator-=(const int& t) { return ((x-=t)<0)&&(x+=P),(*this); }
 
 	mint operator++(int) { return (++x>=P)?x=0,P-1:x-1;}
 	mint operator--(int) { return (--x<0)?x=P-1,0:x+1;}
 	mintp operator++() { return (++x>=P)?x=0,(*this):(*this);}
 	mintp operator--() { return (--x<0)?x=P-1,(*this):(*this);}
 
-	mint operator*(int t) const { return (ll)x*t%P; }
-	mintp operator*=(int t) { return x=(ll)x*t%P,(*this); }
+	mint operator*(const int& t) const { return (ll)x*t%P; }
+	mintp operator*=(const int& t) { return x=(ll)x*t%P,(*this); }
+
+	int v() { return x; }
 
 	ModInt():x(0) {}
 	template<typename Tp> ModInt(Tp y) {
@@ -121,11 +123,11 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
-	M = 0,
+	N = 2e5,
+	M = 2e5,
 	K = 0,
 	Q = 0,
-	S = 0,
+	S = 0,	
 	P = 998244353// 1e9 + 7
 ;
 
@@ -134,8 +136,41 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void _main() {
+int n,m,a[M + 2],b[M + 2],c[M + 2],v[N + 2],u[N + 2];
+vec<pair<int,int>> e[N + 2];
 
+void _main() {
+	scanf("%d%d",&n,&m);
+	rep(i,1,n) v[i]=n;
+	rep(i,1,m) {
+		scanf("%d%d%d",&a[i],&b[i],&c[i]);
+		e[c[i]].ebk(a[i],b[i]);
+		umn(v[a[i]],c[i]);
+		umn(v[b[i]],c[i]);
+	}
+	rep(i,1,n) ++u[v[i]];
+	mint ans=1;
+	int upper=0;
+	per(i,1,n) {
+		upper+=u[i];
+		if(e[i].size()==0) {
+			ans*=upper;
+		} else if(e[i].size()==1) {
+			auto [p,q]=e[i].front();
+			if(v[p]<i&&v[q]<i) ans=0;
+			else if(v[p]>=i&&v[q]>=i) ans*=2;
+		} else {
+			auto [p,q]=e[i].front();
+			for(auto [j,k] : e[i]) {
+				if(p!=j&&p!=k) p=0;
+				if(q!=j&&q!=k) q=0;
+			}
+			int o=max(p,q);
+			if(!o||v[o]<i) ans=0;
+		}
+		--upper;
+	}
+	printf("%d",ans);
 }
 
 void _init() {
