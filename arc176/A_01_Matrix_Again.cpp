@@ -50,9 +50,9 @@ using ui128 = unsigned __int128;
 char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
-template<> constexpr ll inf<ll> = 1ll << 60;
-template<> constexpr i128 inf<i128> = i128(1) << 120;
-
+template<> constexpr ll inf<ll> = 1e18;
+template<> constexpr db inf<db> = 1e18;
+template<> constexpr ldb inf<ldb> = 1e18;
 constexpr db eps = 1e-12;
 
 #define vec vector
@@ -123,8 +123,8 @@ template<int P> struct ModInt {
 };
 
 constexpr int
-	N = 0,
-	M = 0,
+	N = 1e5,
+	M = 10,
 	K = 0,
 	Q = 0,
 	S = 0,
@@ -136,8 +136,28 @@ using mint = ModInt<P>::mint;
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void _main() {
+int n,m,a[M + 2],b[M + 2];
+set<int> rem;
+vec<pair<int,int>> ans;
 
+void work(int k) {
+	rem.erase(k);
+	rep(i,1,n) ans.ebk(i,(k-i+2*n-1)%n+1);
+}
+
+void _main() {
+	scanf("%d%d",&n,&m);
+	rep(i,0,n-1) rem.emplace(i);
+	rep(i,1,m) scanf("%d%d",&a[i],&b[i]);
+	rep(i,1,m) {
+		if(rem.find((a[i]+b[i])%n)==rem.end())
+			work(*rem.begin());
+		else
+			work((a[i]+b[i])%n);
+	}
+	printf("%d\n",ans.size());
+	for(auto [u,v] : ans)
+		printf("%d %d\n",u,v);
 }
 
 void _init() {

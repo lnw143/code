@@ -50,9 +50,9 @@ using ui128 = unsigned __int128;
 char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
-template<> constexpr ll inf<ll> = 1ll << 60;
-template<> constexpr i128 inf<i128> = i128(1) << 120;
-
+template<> constexpr ll inf<ll> = 1e18;
+template<> constexpr db inf<db> = 1e18;
+template<> constexpr ldb inf<ldb> = 1e18;
 constexpr db eps = 1e-12;
 
 #define vec vector
@@ -133,11 +133,21 @@ constexpr int
 
 using mint = ModInt<P>::mint;
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
-void _main() {
+ll n,m,k;
 
+void _main() {
+	scanf("%lld%lld%lld",&n,&m,&k);
+	if(m==k+1) {
+		if(n>=k) printf("0\n");
+		else printf("%d\n",qpow(2,n,10));
+		return ;
+	}
+	if(n<m) return printf("%d\n",qpow(2,n,10)),void();
+	ll t=(n-m+1)/(m-k)+!!((n-m+1)%(m-k));
+	printf("%d\n",qpow(2,n-(m-k)*t,10));
 }
 
 void _init() {
