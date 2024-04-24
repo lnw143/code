@@ -71,15 +71,28 @@ db randpr(db l=0,db r=1) {
 
 constexpr int
 	N = 2e5,
-	M = 22,
+	M = 15,
 	K = 0,
 	Q = 0,
 	S = 0,
 	P = 998244353// 1e9 + 7
 ;
 
-int n,cnt,t[N + 2],b[N + 2],f[1 << M];
-ll a[N + 2],p[N + 2],s[N + 2],m;
+int n,cnt;
+ll a[N + 2],s[N + 2],f[1 << M],g[1 << M],m;
+
+void fmt(ll *a,int t) {
+	rep_(i,0,cnt)
+		rep_(j,0,1<<cnt)
+			if(j&(1<<i))
+				(a[j]+=t*a[j^(1<<i)])%=P;
+}
+
+ll qpow(ll a,ll n) {
+	ll x=1;
+	for(; n; n>>=1,a=a*a%P) if(n&1) x=x*a%P;
+	return x;
+}
 
 void _main() {
 	cin>>n>>m;
@@ -87,29 +100,23 @@ void _main() {
 	ll m_=m;
 	for(ll i=2; i*i<=m_; ++i) {
 		if(m_%i==0) {
-			p[++cnt]=i;
-			s[cnt]=1;
-			while(m_%i==0) m_/=i,++t[cnt],s[cnt]*=i;
+			s[++cnt]=1;
+			while(m_%i==0) m_/=i,s[cnt]*=i;
 		}
 	}
-	if(m_>1) {
-		p[++cnt]=m_;
-		s[cnt]=m_;
-		t[cnt]=1;
-	}
-	assert(cnt<M);
+	if(m_>1) s[++cnt]=m_;
 	ll k=1<<cnt;
 	rep(i,1,n)
 		if(m%a[i]==0) {
-			ll sta=0;
+			int sta=0;
 			rep(j,1,cnt) sta|=(a[i]%s[j]==0)<<(j-1);
-			per(j,0,k-1) {
-				f[j|sta]+=f[j];
-				if(f[j|sta]>=P) f[j|sta]-=P;
-			}
-			if(++f[sta]>=P) f[sta]-=P;
+			++f[sta];
 		}
-	cout<<f[k-1];
+	fmt(f,1);
+	rep_(i,0,1<<cnt)
+		g[i]=qpow(2,f[i]);
+	fmt(g,-1);
+	cout<<((g[k-1]-(m==1))%P+P)%P;
 }
 
 void _init() {
