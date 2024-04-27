@@ -84,6 +84,8 @@ ll qpow(ll a,ll n,ll p) {
 	return x;
 }
 
+const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
 template<typename ...Args> string formatStr(const char* __format,Args ...args) {
 	static char buf[1<<16];
 	sprintf(buf,__format,args...);
