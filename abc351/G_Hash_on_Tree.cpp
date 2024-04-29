@@ -97,7 +97,7 @@ template<int P> struct ModInt {
 	using mint = ModInt<P>;
 	using mintp = mint&;
 
-	operator int() { return x; }
+	operator int() const { return x; }
 
 	mint operator+(int t) const { return x+t>=P?x+t-P:x+t; }
 	mint operator-(int t) const { return x<t?x-t+P:x-t; }
@@ -140,11 +140,73 @@ ll invP(ll x) { return qpow(x,P-2,P); }
 
 int n,q,p[N + 2],a[N + 2];
 vec<int> e[N + 2];
-int dfc,dfn[N + 2],sz[N + 2],wson[N + 2],top[N + 2];
-ll f[N + 2];
+int dfc,dfn[N + 2],sz[N + 2],wson[N + 2],top[N + 2],low[N + 2],rnk[N + 2];
+mint f[N + 2],g[N + 2];
 
+void dfs(int u) {
+	sz[u]=1;
+	if(e[u].size()==0) f[u]=a[u];
+	else {
+		f[u]=1;
+		for(auto v : e[u]) {
+			dfs(v);
+			sz[u]+=sz[v];
+			f[u]*=f[v];
+			if(sz[v]>sz[wson[u]]) wson[u]=v;
+		}
+		f[u]+=a[u];
+	}
+}
+
+void dfs2(int u,int tp) {
+	dfn[u]=++dfc;
+	rnk[dfc]=u;
+	top[u]=tp;
+	if(wson[u]) dfs2(wson[u],tp);
+	else {
+		low[u]=low[tp]=dfn[u];
+		return ;
+	}
+	low[u]=low[tp];
+	g[u]=1;
+	for(auto v : e[u])
+		if(v!=wson[u]) {
+			dfs2(v,v);
+			g[u]*=f[v];
+		}
+}
+
+struct matrix {
+	int n,m;
+	mint a[5][5];
+	mint* operator[](int x) { return a[x]; }
+	const mint* operator[](int x) const { return a[x]; }
+};
+matrix operator*(const matrix& a,const matrix& b) {
+	matrix c;
+	c.n=a.n;
+	c.m=b.m;
+	assert(a.m==b.n);
+	for(int i=1; i<=c.n; ++i)
+		for(int j=1; j<=c.m; ++j) {
+			c[i][j]=0;
+			for(int k=1; k<=a.m; ++k)
+				c[i][j]+=a[i][k]*b[k][j];
+		}
+	return c;
+}
+matrix mat2x2(ll a,ll b,ll c,ll d) {
+	matrix x;
+	x.n=x.m=2;
+	x[1][1]=a;
+	x[1][2]=b;
+	x[2][1]=c;
+	x[2][2]=d;
+	return x;
+}
+const matrix E = mat2x2(1,0,0,1);
 namespace segtree {
-	ll tr[M];
+	matrix tr[M];
 #define mid ((l+r)>>1)
 #define ls (u<<1)
 #define rs (ls|1)
@@ -152,51 +214,50 @@ namespace segtree {
 #define ri rs,mid+1,r
 	void build(int u,int l,int r) {
 		if(l==r) {
-			tr[u]=f[l];
-			if(wson[l]) (tr[u]*=invP((f[wson[l]]+a[wson[l]])%P))%=P;
+			tr[u]=mat2x2(g[rnk[l]],0,a[rnk[l]],1);
 			return ;
 		}
 		build(li);
 		build(ri);
-		tr[u]=(tr[ls]+tr[rs])%P;
+		tr[u]=tr[rs]*tr[ls];
 	}
-	ll query(int u,int l,int r,int x,int y) {
-		if(r<x||y<l) return 0;
-		if(x<=l&&r<=y) return tr[x];
-		return (query(li,x,y)+query(ri,x,y))%P;
+	matrix query(int u,int l,int r,int x,int y) {
+		if(r<x||y<l) return E;
+		if(x<=l&&r<=y) return tr[u];
+		return query(ri,x,y)*query(li,x,y);
 	}
-	void modify(int u,int l,int r) {
-		
-	}
-}
-
-void dfs(int u) {
-	sz[u]=1;
-	f[u]=1;
-	if(e[u].size()==0) f[u]=0;
-	for(auto v : e[u]) {
-		dfs(v);
-		f[u]=f[u]*(f[v]+a[v])%P;
-		if(sz[v]>sz[wson[u]]) wson[u]=v;
+	template<typename F> void modify(int u,int l,int r,int x,F f) {
+		if(r<dfn[x]||dfn[x]<l) return ;
+		if(l==r) {
+			f(tr[u]);
+			return ;
+		}
+		if(dfn[x]<=mid) modify(li,x,f);
+		else modify(ri,x,f);
+		tr[u]=tr[rs]*tr[ls];
 	}
 }
 
-void dfs2(int u,int tp) {
-	dfn[u]=++dfc;
-	top[u]=tp;
-	if(wson[u]) dfs2(wson[u],tp);
-	for(auto v : e[u]) 
-		if(v!=wson[u])
-			dfs2(v,v);
+mint get_ans(int x) {
+	matrix s;
+	s.n=1;
+	s.m=2;
+	s[1][1]=a[rnk[low[x]]];
+	s[1][2]=1;
+	return (s*segtree::query(1,1,n,dfn[top[x]],low[x]-1))[1][1];
 }
 
-void solve(int x,ll v) {
+mint update(int x) {
+	x=top[x];
 	using namespace segtree;
-	while(x!=1) {
-		ll s=query(1,1,n,dfn[top[x]],dfn[x]);
-		
-		x=p[top[x]];
-	}
+	mint cur=get_ans(x);
+	if(x==1) return cur;
+	modify(1,1,n,p[x],[=](matrix &t) {
+		t[1][1]*=cur;
+		t[1][1]*=qpow(f[x],P-2,P);
+	});
+	f[x]=cur;
+	return update(p[x]);
 }
 
 void _main() {
@@ -205,7 +266,18 @@ void _main() {
 	rep(i,1,n) scanf("%d",&a[i]);
 	dfs(1);
 	dfs2(1,1);
-
+	using namespace segtree;
+	build(1,1,n);
+	rep(i,1,q) {
+		int x,y;
+		scanf("%d%d",&x,&y);
+		modify(1,1,n,x,[=](matrix &t){
+			t[2][1]=y;
+		});
+		a[x]=y;
+		printf("%d\n",update(x));
+		debug("%d\n",get_ans(1));
+	}
 }
 
 void _init() {

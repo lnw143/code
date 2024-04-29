@@ -97,7 +97,7 @@ template<int P> struct ModInt {
 	using mint = ModInt<P>;
 	using mintp = mint&;
 
-	operator int() { return x; }
+	operator int() const { return x; }
 
 	mint operator+(int t) const { return x+t>=P?x+t-P:x+t; }
 	mint operator-(int t) const { return x<t?x-t+P:x-t; }
