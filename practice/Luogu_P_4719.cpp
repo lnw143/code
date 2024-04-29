@@ -21,12 +21,12 @@ void dfs(int u,int p) {
 			if(sz[v]>sz[wson[u]]) wson[u]=v;
 		}
 }
-void dfs2(int u,int p,int tp) {
+int dfs2(int u,int p,int tp) {
 	dfn[u]=++dfc;
 	rnk[dfc]=u;
 	top[u]=tp;
-	if(wson[u]) dfs2(wson[u],u,tp);
-	low[u]=dfc;
+	if(wson[u]) low[u]=dfs2(wson[u],u,tp);
+	else return low[u]=dfc;
 	g[u][1]=a[u];
 	for(auto v : e[u])
 		if(v!=p&&v!=wson[u]) {
@@ -34,6 +34,7 @@ void dfs2(int u,int p,int tp) {
 			g[u][1]+=f[v][0];
 			g[u][0]+=max(f[v][1],f[v][0]);
 		}
+	return low[u];
 }
 struct matrix {
 	int n,m,a[5][5];
@@ -46,7 +47,7 @@ matrix operator*(const matrix& a,const matrix& b) {
 	assert(a.m==b.n);
 	for(int i=1; i<=c.n; ++i)
 		for(int j=1; j<=c.m; ++j) {
-			c[i][j]=0;
+			c[i][j]=-inf;
 			for(int k=1; k<=a.m; ++k)
 				c[i][j]=max(c[i][j],a[i][k]+b[k][j]);
 		}
@@ -67,58 +68,55 @@ matrix mat2x2(int a,int b,int c,int d) {
 const matrix INF = mat2x2(0,-inf,-inf,0);
 void build(int u,int l,int r) {
 	if(l==r) {
-		tr[u]=mat2x2(g[rnk[l]][1],g[rnk[l]][0],g[rnk[l]][1],-inf);
-		// g[u][1]+=f[v][0];
-		// g[u][0]+=max(f[v][1],f[v][0]);
+		tr[u]=mat2x2(g[rnk[l]][0],g[rnk[l]][1],g[rnk[l]][0],-inf);
 		return ;
 	}
 	build(li);
 	build(ri);
-	tr[u]=tr[ls]*tr[rs];
+	tr[u]=tr[rs]*tr[ls];
 }
 matrix query(int u,int l,int r,int x,int y) {
 	if(r<x||y<l) return INF;
 	if(x<=l&&r<=y) return tr[u];
-	return query(li,x,y)*query(ri,x,y);
+	return query(ri,x,y)*query(li,x,y);
 }
 void update(int u,int l,int r,int x,int y) {
 	if(r<dfn[x]||dfn[x]<l) return ;
 	if(l==r) {
-		tr[u][1][1]+=y-a[x];
-		tr[u][2][1]+=y-a[x];
+		tr[u][1][2]+=y-a[x];
 		a[x]=y;
 		return ;
 	}
 	if(dfn[x]<=mid) update(li,x,y);
 	else update(ri,x,y);
-	tr[u]=tr[ls]*tr[rs];
+	tr[u]=tr[rs]*tr[ls];
 }
 void update(int u,int l,int r,int x,const matrix& now,const matrix& past) {
 	if(r<dfn[x]||dfn[x]<l) return ;
 	if(l==r) {
-		tr[u][1][1]+=now[1][1]-past[1][1];
-		tr[u][2][1]+=now[1][1]-past[1][1];
-		tr[u][1][2]+=max(now[1][1],now[1][2])-max(past[1][1],past[1][2]);
+		int t1=max(now[1][1],now[1][2])-max(past[1][1],past[1][2]);
+		tr[u][1][1]+=t1;
+		tr[u][2][1]+=t1;
+		tr[u][1][2]+=now[1][1]-past[1][1];
 		return ;
 	}
 	if(dfn[x]<=mid) update(li,x,now,past);
 	else update(ri,x,now,past);
-	tr[u]=tr[ls]*tr[rs];
+	tr[u]=tr[rs]*tr[ls];
 }
 matrix get_ans(int x) {
 	matrix s;
 	s.n=1,s.m=2;
 	s[1][1]=0;
 	s[1][2]=a[rnk[low[x]]];
-	s=s*query(1,1,n,dfn[top[x]],low[x]);
-	return s;
+	return s*query(1,1,n,dfn[top[x]],low[x]-1);
 }
 int solve(int x,const matrix& past) {
 	auto now=get_ans(x);
 	if(top[x]==1) return max(now[1][1],now[1][2]);
 	auto pans=get_ans(fa[top[x]]);
 	update(1,1,n,fa[top[x]],now,past);
-	solve(fa[top[x]],pans);
+	return solve(fa[top[x]],pans);
 }
 int main() {
 	scanf("%d%d",&n,&m);
