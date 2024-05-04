@@ -44,14 +44,11 @@ using ull = long long unsigned;
 using uint = unsigned int;
 using db = double;
 using ldb = long double;
-using i128 = __int128;
-using ui128 = unsigned __int128;
 
 char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 1e9;
 template<> constexpr ll inf<ll> = 1ll << 60;
-template<> constexpr i128 inf<i128> = i128(1) << 120;
 
 constexpr db eps = 1e-12;
 
@@ -80,9 +77,22 @@ template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true
 
 ll qpow(ll a,ll n,ll p) {
 	ll x=1;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
+	return x;
+}
+
+#if defined(__SIZEOF_INT128__)
+
+using i128 = __int128;
+using ui128 = unsigned __int128;
+template<> constexpr i128 inf<i128> = i128(1) << 120;
+ll qPow(ll a,ll n,ll p) {
+	ll x=1;
 	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
 	return x;
 }
+
+#endif
 
 const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
