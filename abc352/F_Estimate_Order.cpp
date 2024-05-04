@@ -1,0 +1,229 @@
+// #pragma GCC optimize("O3,unroll-loops")
+
+#ifdef __SIZEOF_INT128__
+// aaa
+#endif
+
+#include<cstdio>
+#include<cmath>
+#include<cstdint>
+#include<map>
+#include<set>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+#include<queue>
+#include<bitset>
+#include<random>
+#include<chrono>
+#include<cassert>
+#include<cstdlib>
+#include<complex>
+#include<deque>
+#include<functional>
+#include<iostream>
+#include<limits>
+#include<numeric>
+#include<iomanip>
+#include<string>
+#include<unordered_map>
+#include<unordered_set>
+#include<utility>
+
+#define rep(i,l,r) for(int i(l),i##End(r); i<=i##End; ++i)
+#define rep_(i,l,r) for(int i(l),i##End(r); i<i##End; ++i)
+#define per(i,l,r) for(int i(r),i##End(l); i>=i##End; --i)
+#define per_(i,l,r) for(int i(r),i##End(l); i>i##End; --i)
+
+#define pbk push_back
+#define ebk emplace_back
+#define mkp make_pair
+#define mkt make_tuple
+#define debug(format,args...) fprintf(stderr,format,##args)
+
+using namespace std;
+
+using ll = long long;
+using ull = long long unsigned;
+using uint = unsigned int;
+using db = double;
+using ldb = long double;
+using i128 = __int128;
+using ui128 = unsigned __int128;
+
+char address_head;
+template<typename T> constexpr T inf = 0;
+template<> constexpr int inf<int> = 1e9;
+template<> constexpr ll inf<ll> = 1ll << 60;
+template<> constexpr i128 inf<i128> = i128(1) << 120;
+
+constexpr db eps = 1e-12;
+
+#define vec vector
+template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
+template<typename T> using big_heap = priority_queue<T>;
+
+#define clock() chrono::steady_clock::now()
+const auto start_time = clock();
+template<typename T = db> T runtime() { return chrono::duration<T>(clock()-start_time).count(); }
+
+mt19937 rnd(random_device{}());
+int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
+ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
+db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
+
+void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
+void No(bool f=true) { Yes(!f); }
+void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
+void no(bool f=true) { yes(!f); }
+void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
+void NO(bool f=true) { YES(!f); }
+
+template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
+template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
+
+ll qpow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	return x;
+}
+
+const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
+template<typename ...Args> string formatStr(const char* __format,Args ...args) {
+	static char buf[1<<16];
+	sprintf(buf,__format,args...);
+	return buf;
+}
+
+template<int P> struct ModInt {
+  public:
+	using mint = ModInt<P>;
+	using mintp = mint&;
+
+	operator int() const { return x; }
+
+	mint operator+(int t) const { return x+t>=P?x+t-P:x+t; }
+	mint operator-(int t) const { return x<t?x-t+P:x-t; }
+	mintp operator+=(int t) { return ((x+=t)>=P)&&(x-=P),(*this); }
+	mintp operator-=(int t) { return ((x-=t)<0)&&(x+=P),(*this); }
+
+	mint operator++(int) { return (++x>=P)?x=0,P-1:x-1;}
+	mint operator--(int) { return (--x<0)?x=P-1,0:x+1;}
+	mintp operator++() { return (++x>=P)?x=0,(*this):(*this);}
+	mintp operator--() { return (--x<0)?x=P-1,(*this):(*this);}
+
+	mint operator*(int t) const { return (ll)x*t%P; }
+	mintp operator*=(int t) { return x=(ll)x*t%P,(*this); }
+
+	ModInt():x(0) {}
+	template<typename Tp> ModInt(Tp y) {
+		if(y<0) x=y%P+P;
+		else if(y<P) x=y;
+		else x=y%P;
+	}
+  private:
+	int x;
+};
+
+constexpr int
+	N = 16,
+	M = N * (N - 1) / 2,
+	K = 0,
+	Q = 0,
+	S = 0,
+	P = 998244353// 1e9 + 7
+;
+
+using mint = ModInt<P>::mint;
+
+// #define MULTITEST
+// #define FILE_IO_NAME ""
+
+int n,m,a,b,c,dep[N + 2],fa[N + 2],mn[N + 2],ans[N + 2],sta[N + 2];
+bool f[(1 << N) + 2];
+struct edge { int v,w; };
+vec<edge> e[N + 2];
+vec<int> pos,val;
+bool bz[N + 2];
+
+void bfs() {
+	static int que[N + 2];
+	int h=0,t=0;
+	rep(i,1,n)
+		if(fa[i]==i) {
+			que[++t]=i;
+			dep[i]=0;
+			bz[i]=true;
+		}
+	while(h<t) {
+		int u=que[++h];
+		for(auto [v,w] : e[u])
+			if(!bz[v]) {
+				dep[v]=dep[u]+w;
+				bz[v]=true;
+				que[++t]=v;
+			}
+	}
+}
+
+void _main() {
+	scanf("%d%d",&n,&m);
+	rep(i,1,n) fa[i]=i;
+	rep(i,1,m) {
+		scanf("%d%d%d",&a,&b,&c);
+		e[b].ebk(edge{a,c});
+		e[a].ebk(edge{b,-c});
+		fa[a]=fa[b]=min(fa[a],fa[b]);
+	}
+	bfs();
+	rep(i,1,n)
+		umn(mn[fa[i]],dep[i]);
+	rep(i,1,n)
+		dep[i]-=mn[fa[i]],
+		sta[fa[i]]|=1<<dep[i];
+	rep(i,1,n)
+		if(fa[i]==i)
+			pos.ebk(i),val.ebk(sta[i]);
+	const int k=(1<<n)-1;
+	rep_(i,0,pos.size()) {
+		f[0]=1;
+		rep(j,1,k) f[j]=0;
+		rep_(h,0,val.size()) {
+			if(h==i) continue;
+			per(j,1,k)
+				for(int l=val[h]; l<=k; l<<=1)
+					if((l|j)==j) f[j]|=f[j^l];
+		}
+		int sum=0;
+		for(int j=val[i],p=1; j<=k; j<<=1,++p)
+			if(f[k^j]) {
+				++sum;
+				ans[pos[i]]=p;
+			}
+		if(sum!=1) ans[pos[i]]=-1;
+	}
+	rep(i,1,n)
+		printf("%d ",ans[fa[i]]!=-1?ans[fa[i]]+dep[i]:-1);
+}
+
+void _init() {
+
+}
+
+char address_tail;
+
+int main() {
+#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
+	freopen(FILE_IO_NAME".in","r",stdin);
+	freopen(FILE_IO_NAME".out","w",stdout);
+#endif
+	_init();
+	int T=1;
+	debug("Memory:%.8lfMib\n",double(&address_tail-&address_head)/pow(2,20));
+#if defined(MULTITEST)
+	scanf("%d",&T);
+#endif
+	while(T--) _main();
+	return 0;
+}
