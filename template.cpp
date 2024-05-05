@@ -1,4 +1,7 @@
-#pragma GCC optimize("O3,unroll-loops")
+// #pragma GCC optimize("O3,unroll-loops")
+
+// #pragma GCC optimize("Ofast,inline,unroll-loops,fast-math,no-stack-protector")
+// #pragma GCC target("sse,sse2,avx,avx2,bmi,bmi2,lzcnt,popcnt,avx512vl,avx512f,tune=native")
 
 #include<cstdio>
 #include<cmath>
