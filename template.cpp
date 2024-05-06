@@ -29,10 +29,9 @@
 #include<unordered_set>
 #include<utility>
 
-#define rep(i,l,r) for(int i(l),i##End(r); i<=i##End; ++i)
-#define rep_(i,l,r) for(int i(l),i##End(r); i<i##End; ++i)
-#define per(i,l,r) for(int i(r),i##End(l); i>=i##End; --i)
-#define per_(i,l,r) for(int i(r),i##End(l); i>i##End; --i)
+#define fo(i,l,r) for(int i(l),i##END(r); i<=i##END; ++i)
+#define fd(i,l,r) for(int i(l),i##END(r); i>=i##END; --i)
+#define fu(i,l,r) for(int i(l),i##END(r); i<i##END; ++i)
 
 #define pbk push_back
 #define ebk emplace_back
@@ -43,14 +42,14 @@
 using namespace std;
 
 using ll = long long;
-using ull = long long unsigned;
+using ull = unsigned long long;
 using uint = unsigned int;
 using db = double;
 using ldb = long double;
 
 char address_head;
 template<typename T> constexpr T inf = 0;
-template<> constexpr int inf<int> = 1e9;
+template<> constexpr int inf<int> = 0x3f3f3f3f;
 template<> constexpr ll inf<ll> = 1ll << 60;
 
 constexpr db eps = 1e-12;
@@ -68,83 +67,28 @@ int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
 ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
 db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
 
-void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
-void No(bool f=true) { Yes(!f); }
-void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
-void no(bool f=true) { yes(!f); }
-void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
-void NO(bool f=true) { YES(!f); }
-
 template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
 template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
 
-ll qpow(ll a,ll n,ll p) {
-	ll x=1;
-	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
-	return x;
-}
-
-#if defined(__SIZEOF_INT128__)
-
+void Yes(bool); void No(bool); void yes(bool); void no(bool); void YES(bool); void NO(bool);
+template<typename ...Args> string formatStr(const char* __format,Args ...args);
+ll qpow(ll,ll,ll);
+#ifdef __SIZEOF_INT128__
 using i128 = __int128;
 using ui128 = unsigned __int128;
 template<> constexpr i128 inf<i128> = i128(1) << 120;
-ll qPow(ll a,ll n,ll p) {
-	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
-	return x;
-}
-
+ll qPow(ll,ll,ll);
 #endif
 
 const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-template<typename ...Args> string formatStr(const char* __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
+// #define MOD 998244353 // 1000000007
 
-template<int P> struct ModInt {
-  public:
-	using mint = ModInt<P>;
-	using mintp = mint&;
-
-	operator int() const { return x; }
-
-	mint operator+(int t) const { return x+t>=P?x+t-P:x+t; }
-	mint operator-(int t) const { return x<t?x-t+P:x-t; }
-	mintp operator+=(int t) { return ((x+=t)>=P)&&(x-=P),(*this); }
-	mintp operator-=(int t) { return ((x-=t)<0)&&(x+=P),(*this); }
-
-	mint operator++(int) { return (++x>=P)?x=0,P-1:x-1;}
-	mint operator--(int) { return (--x<0)?x=P-1,0:x+1;}
-	mintp operator++() { return (++x>=P)?x=0,(*this):(*this);}
-	mintp operator--() { return (--x<0)?x=P-1,(*this):(*this);}
-
-	mint operator*(int t) const { return (ll)x*t%P; }
-	mintp operator*=(int t) { return x=(ll)x*t%P,(*this); }
-
-	ModInt():x(0) {}
-	template<typename Tp> ModInt(Tp y) {
-		if(y<0) x=y%P+P;
-		else if(y<P) x=y;
-		else x=y%P;
-	}
-  private:
-	int x;
-};
-
-constexpr int
-	N = 0,
-	M = 0,
-	K = 0,
-	Q = 0,
-	S = 0,
-	P = 998244353// 1e9 + 7
-;
-
-using mint = ModInt<P>::mint;
+#ifdef MOD
+const int P = MOD;
+template<int P> struct ModInt;
+using mint = ModInt<P>;
+#endif
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
@@ -173,3 +117,62 @@ int main() {
 	while(T--) _main();
 	return 0;
 }
+
+template<int P> struct ModInt {
+  public:
+	operator int() const { return x; }
+
+	ModInt operator+(ModInt t) const { return x+t; }
+	ModInt operator-(ModInt t) const { return x-t; }
+	ModInt operator*(ModInt t) const { return (ll)x*t; }
+	ModInt operator/(ModInt t) const { return (ll)x*t.inv(); }
+
+	ModInt operator++(int) { int p=x++; return x%=P,p; }
+	ModInt operator--(int) { int p=x--; return x%=P,p; }
+	ModInt& operator++() { return ++x%=P,(*this);}
+	ModInt& operator--() { return --x%=P,(*this);}
+	
+	ModInt& operator+=(ModInt t) { return (*this)=(*this)+t; }
+	ModInt& operator-=(ModInt t) { return (*this)=(*this)-t; }
+	ModInt& operator*=(ModInt t) { return (*this)=(*this)*t; }
+	ModInt& operator/=(ModInt t) { return (*this)=(*this)/t; }
+	
+	bool operator==(ModInt t) { return safe_mod()==t.safe_mod(); }
+	bool operator!=(ModInt t) { return safe_mod()!=t.safe_mod(); }
+
+	int safe_mod() const { return (x%P+P)%P; }
+
+	ModInt inv() const { return qpow(x,P-2,P); }
+
+	ModInt():x(0) {}
+	template<typename Tp> ModInt(Tp y): x(y%P) {}
+  private:
+	int x;
+};
+
+void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
+void No(bool f=true) { Yes(!f); }
+void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
+void no(bool f=true) { yes(!f); }
+void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
+void NO(bool f=true) { YES(!f); }
+
+template<typename ...Args> string formatStr(const char* __format,Args ...args) {
+	static char buf[1<<16];
+	sprintf(buf,__format,args...);
+	return buf;
+}
+
+ll qPow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	return x;
+}
+
+#ifdef __SIZEOF_INT128__
+ll qpow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
+	return x;
+}
+#endif
