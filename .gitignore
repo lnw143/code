@@ -4,3 +4,8 @@
 *.out
 *.exe
 *.ans
+*.std
+*.txt
+*.bin
+std.cpp
+test.cpp

@@ -19,12 +19,13 @@ namespace acam {
 	}
 	void build() {
 		static int que[S + 2];
-		int h=0,t=1;
+		int h=0,t=0;
 		for(int i=0; i<A; ++i)
 			if(tr[0][i])
 				que[++t]=tr[0][i];
 		while(h<t) {
 			int u=que[++h];
+			f[u]+=f[fail[u]];
 			for(int i=0; i<A; ++i)
 				if(tr[u][i])
 					fail[tr[u][i]]=tr[fail[u]][i],que[++t]=tr[u][i];
@@ -76,21 +77,12 @@ int main() {
 			base[i][j]=-inf;
 		for(int j=0; j<A; ++j)
 			base[i][tr[i][j]]=f[tr[i][j]];
-		for(int j=0; j<=tot; ++j)
-			printf("%lld ",max(-1ll,base[i][j]));
-		putchar('\n');
 	}
 	matrix ori(0,tot);
 	ori[0][0]=0;
 	for(int i=1; i<=tot; ++i)
 		ori[0][i]=-inf;
-	// ori=ori*qpow(base,l);
-	for(int i=1; i<=l; ++i) {
-		ori=ori*base;
-		for(int j=0; j<=tot; ++j)
-			printf("%lld ",max(-1ll,ori[0][j]));
-		putchar('\n');
-	}
+	ori=ori*qpow(base,l);
 	ll ans=0;
 	for(int i=0; i<=tot; ++i)
 		ans=max(ans,ori[0][i]);
