@@ -70,40 +70,23 @@ db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
 template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
 template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
 
-void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
-void No(bool f=true) { Yes(!f); }
-void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
-void no(bool f=true) { yes(!f); }
-void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
-void NO(bool f=true) { YES(!f); }
-template<typename ...Args> string formatStr(const char* __format,Args ...args) {
-	static char buf[1<<16];
-	sprintf(buf,__format,args...);
-	return buf;
-}
-ll qpow(ll a,ll n,ll p) {
-	ll x=1;
-	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
-	return x;
-}
+void Yes(bool); void No(bool); void yes(bool); void no(bool); void YES(bool); void NO(bool);
+template<typename ...Args> string formatStr(const char* __format,Args ...args);
+ll qpow(ll,ll,ll);
 #ifdef __SIZEOF_INT128__
 using i128 = __int128;
 using ui128 = unsigned __int128;
 template<> constexpr i128 inf<i128> = i128(1) << 120;
-ll qPow(ll a,ll n,ll p) {
-	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
-	return x;
-}
+ll qPow(ll,ll,ll);
 #endif
 
 const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-// #define MOD 998244353 // 1000000007
+#define MOD 998244353 // 1000000007
 
 #ifdef MOD
 const int P = MOD;
-struct ModInt {
+template<int P> struct ModInt {
   public:
 	operator int() const { return x; }
 
@@ -134,15 +117,30 @@ struct ModInt {
   private:
 	int x;
 };
-using mint = ModInt;
+using mint = ModInt<P>;
 #endif
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
 
-void _main();
-void _init();
-char* last_address();
+int n,m,k;
+
+void _main() {
+	scanf("%d%d%d",&n,&m,&k);
+	if(n==1) return printf("%lld",qpow(k,m,P)),void();
+	if(m==1) return printf("%lld",qpow(k,n,P)),void();
+	if(k==1) return printf("1"),void();
+	mint ans=0;
+	for(int i=1; i<=k; ++i)
+		ans+=(qpow(k-i+1,m,P)-qpow(k-i,m,P))*qpow(i,n,P)%P;
+	printf("%d",ans.safe_mod());
+}
+
+void _init() {
+
+}
+
+char address_tail;
 
 int main() {
 #if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
@@ -151,7 +149,7 @@ int main() {
 #endif
 	_init();
 	int T=1;
-	debug("Memory:%.8lfMib\n",double(last_address()-&address_head)/pow(2,20));
+	debug("Memory:%.8lfMib\n",double(&address_tail-&address_head)/pow(2,20));
 #if defined(MULTITEST)
 	scanf("%d",&T);
 #endif
@@ -159,15 +157,29 @@ int main() {
 	return 0;
 }
 
-void _main() {
+void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
+void No(bool f=true) { Yes(!f); }
+void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
+void no(bool f=true) { yes(!f); }
+void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
+void NO(bool f=true) { YES(!f); }
 
+template<typename ...Args> string formatStr(const char* __format,Args ...args) {
+	static char buf[1<<16];
+	sprintf(buf,__format,args...);
+	return buf;
 }
 
-void _init() {
-
+ll qPow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+	return x;
 }
 
-char* last_address() {
-	static char address_tail;
-	return &address_tail;
+#ifdef __SIZEOF_INT128__
+ll qpow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
+	return x;
 }
+#endif

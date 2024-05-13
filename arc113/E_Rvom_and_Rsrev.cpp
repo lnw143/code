@@ -137,7 +137,7 @@ struct ModInt {
 using mint = ModInt;
 #endif
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
 void _main();
@@ -159,8 +159,38 @@ int main() {
 	return 0;
 }
 
-void _main() {
+const int N = 2e5;
 
+int n;
+char s[N + 2];
+bool g[N + 2],bz[N + 2];
+
+void _main() {
+	scanf("%s",s+1);
+	n=strlen(s+1);
+	int a=0,b=0;
+	fo(i,1,n)
+		++(s[i]=='a'?a:b);
+	if(!b||!a||a==1) return puts(s),void();
+	int p=0;
+	bool f=false;
+	fd(i,n,1)
+		if(s[i]=='b') f=true;
+		else g[i]=f;
+	fo(i,1,n) bz[i]=false;
+	fo(i,1,n)
+		if(s[i]=='a'&&(p||g[i])) {
+			if(p) {
+				bz[p]=true;
+				bz[i]=true;
+				p=0;
+			} else
+				p=i;
+		}
+	fo(i,1,n)
+		if(!bz[i])
+			putchar(s[i]);
+	putchar('\n');
 }
 
 void _init() {
