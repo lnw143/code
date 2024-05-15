@@ -1,4 +1,4 @@
-///*
+/*
 #include "graph.h"
 #include <cstdio>
 #include <cstdlib>
@@ -35,20 +35,31 @@ int main() {
 }
 //*/
 
-#include <algorithm>
 #include <vector>
 using namespace std;
 
 const int N = 3e5, logN = 20;
 
-int mx[N + 2],mn[N + 2],p[logN][N + 2],q[logN][N + 2],Log2[N + 2];
+int a[N + 2],mx[N + 2],mn[N + 2],p[logN][N + 2],Log2[N + 2];
 struct rmq {
 	int x,y;
 } st[logN][N + 2];
 
-void work(const int n,const vector<int> &a,int p[logN][N + 2],vector<int> ord,int P) {
+rmq merge(rmq u,rmq v) {
+	return rmq{a[u.x]<a[v.x]?u.x:v.x,a[u.y]<a[v.y]?v.y:u.y};
+}
+
+rmq ask(int l,int r) {
+	int k=Log2[r-l+1];
+	return merge(st[k][l],st[k][r-(1<<k)+1]);
+}
+
+void init_permutation(int n, vector<int> a_) {
+	for(int i=0; i<n; ++i) a[i]=a_[i];
 	vector<int> stk1,stk2;
-	for(auto i : ord) {
+	for(int i=2; i<=n; ++i)
+		Log2[i]=Log2[i>>1]+1;
+	for(int i=0; i<n; ++i) {
 		while(!stk1.empty()&&a[stk1.back()]<a[i]) {
 			mx[stk1.back()]=i;
 			stk1.pop_back();
@@ -62,40 +73,19 @@ void work(const int n,const vector<int> &a,int p[logN][N + 2],vector<int> ord,in
 	}
 	for(auto i : stk1) mx[i]=n;
 	for(auto i : stk2) mn[i]=n;
-	auto merge = [&](rmq u,rmq v) {
-		return rmq{a[u.x]<a[v.x]?u.x:v.x,a[u.y]<a[v.y]?v.y:u.y};
-	};
 	for(int i=0; i<n; ++i)
 		st[0][i]=rmq{i,i};
 	for(int j=1; j<logN; ++j)
 		for(int i=0; i+(1<<j)<=n; ++i)
 			st[j][i]=merge(st[j-1][i],st[j-1][i+(1<<(j-1))]);
-	auto ask = [&](int l,int r) {
-		int k=Log2[r-l+1];
-		return merge(st[k][l],st[k][r-(1<<k)+1]);
-	};
-	if(P==n) for(int i=0; i<n-1; ++i)
+	for(int i=0; i<n-1; ++i)
 		p[0][i]=max(ask(i,mx[i]-1).x,ask(i,mn[i]-1).y);
-	else for(int i=0; i<n-1; ++i)
-		p[0][i]=min(ask(mx[i]+1,i).x,ask(mn[i]+1,i).y);
-	p[0][n-1]=P;
+	p[0][n-1]=n;
 	for(int j=0; j<logN; ++j)
-		p[j][n]=P;
+		p[j][n]=n;
 	for(int j=1; j<logN; ++j)
 		for(int i=0; i<n; ++i)
 			p[j][i]=p[j-1][p[j-1][i]];
-}
-
-void init_permutation(int n, vector<int> a) {
-	for(int i=2; i<=n; ++i)
-		Log2[i]=Log2[i>>1]+1;
-	vector<int> ord;
-	for(int i=0; i<n; ++i)
-		ord.push_back(i);
-	work(n,a,p,ord,n);
-	reverse(ord.begin(),ord.end());
-	work(n,a,q,ord,-1);
-
 }
 
 int calc_f(int l, int r) {
@@ -103,5 +93,9 @@ int calc_f(int l, int r) {
 	for(int i=logN-1; i>=0; --i)
 		if(p[i][l]<=r)
 			ans+=1<<i,l=p[i][l];
+	while(l<r) {
+		l=max(ask(l,min(mx[l]-1,r)).x,ask(l,min(mn[l]-1,r)).y);
+		++ans;
+	}
 	return ans;
 }
