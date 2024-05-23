@@ -38,6 +38,7 @@
 #define mkp make_pair
 #define mkt make_tuple
 #define debug(format,args...) fprintf(stderr,format,##args)
+#define error(message,args...) (debug(message,##args),exit(1))
 
 using namespace std;
 
@@ -51,6 +52,12 @@ char address_head;
 template<typename T> constexpr T inf = 0;
 template<> constexpr int inf<int> = 0x3f3f3f3f;
 template<> constexpr ll inf<ll> = 1ll << 60;
+
+#ifdef __SIZEOF_INT128__
+using i128 = __int128;
+using ui128 = unsigned __int128;
+template<> constexpr i128 inf<i128> = i128(1) << 120;
+#endif
 
 constexpr db eps = 1e-12;
 
@@ -86,16 +93,17 @@ ll qpow(ll a,ll n,ll p) {
 	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
 	return x;
 }
-#ifdef __SIZEOF_INT128__
-using i128 = __int128;
-using ui128 = unsigned __int128;
-template<> constexpr i128 inf<i128> = i128(1) << 120;
-ll qPow(ll a,ll n,ll p) {
-	ll x=1;
-	for(; n; n>>=1,a=(i128)a*a%p) if(n&1) x=(i128)x*a%p;
+ll mul(ll a,ll b,ll p) {
+	a%=p,b%=p;
+	ll x=0;
+	for(; b; b>>=1,a=(a<<1)%p) if(b&1) x=(x+a)%p;
 	return x;
 }
-#endif
+ll qPow(ll a,ll n,ll p) {
+	ll x=1;
+	for(; n; n>>=1,a=mul(a,a,p)) if(n&1) x=mul(x,a,p);
+	return x;
+}
 
 const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
