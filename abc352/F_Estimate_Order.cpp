@@ -1,9 +1,5 @@
 // #pragma GCC optimize("O3,unroll-loops")
 
-#ifdef __SIZEOF_INT128__
-// aaa
-#endif
-
 #include<cstdio>
 #include<cmath>
 #include<cstdint>
@@ -147,11 +143,13 @@ vec<edge> e[N + 2];
 vec<int> pos,val;
 bool bz[N + 2];
 
+int find(int u) { return fa[u]==u?u:fa[u]=find(fa[u]); }
+
 void bfs() {
 	static int que[N + 2];
 	int h=0,t=0;
 	rep(i,1,n)
-		if(fa[i]==i) {
+		if(find(i)==i) {
 			que[++t]=i;
 			dep[i]=0;
 			bz[i]=true;
@@ -174,16 +172,16 @@ void _main() {
 		scanf("%d%d%d",&a,&b,&c);
 		e[b].ebk(edge{a,c});
 		e[a].ebk(edge{b,-c});
-		fa[a]=fa[b]=min(fa[a],fa[b]);
+		fa[find(a)]=find(b);
 	}
 	bfs();
 	rep(i,1,n)
-		umn(mn[fa[i]],dep[i]);
+		umn(mn[find(i)],dep[i]);
 	rep(i,1,n)
-		dep[i]-=mn[fa[i]],
-		sta[fa[i]]|=1<<dep[i];
+		dep[i]-=mn[find(i)],
+		sta[find(i)]|=1<<dep[i];
 	rep(i,1,n)
-		if(fa[i]==i)
+		if(find(i)==i)
 			pos.ebk(i),val.ebk(sta[i]);
 	const int k=(1<<n)-1;
 	rep_(i,0,pos.size()) {
