@@ -3,7 +3,7 @@
 #include<vector>
 using namespace std;
 using ll = long long;
-using LL = unsigned __int128;
+using LL = __int128;
 const int N = 1e5;
 int n,fa[N + 2],q[N + 2],s[N + 2],dep[N + 2],p[N + 2];
 ll a[N + 2],b[N + 2],c[N + 2];
