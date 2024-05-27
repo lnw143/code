@@ -1,11 +1,37 @@
 #include <vector>
+#include <utility>
+#include <cassert>
 #include "Bob.h"
 
-// you may define some global variables, but it does not work if you try to transfer any information from function Alice() to function Bob() through these variables.
-// you had better not use the same global variables in function Alice() and in function Bob().
+using namespace std;
+using LL = __int128;
+using ll = long long;
 
-long long Bob(std::vector<std::pair<int,int>> V){
-	// add your code here
-	
-    return 3; // change this into your code
+LL exgcd(LL a,LL b,LL &x,LL &y) {
+	if(!b) {
+		x=1,y=0;
+		return a;
+	}
+	LL d=exgcd(b,a%b,y,x);
+	y-=a/b*x;
+	return d;
+}
+
+ll CRT(const vector<pair<ll,ll>>& eq) {
+	LL a=0,m=1;
+	for(auto [n,b] : eq) {
+		LL x,y,d=exgcd(m,n,x,y);
+		assert(m*x+n*y==d);
+		m=m/d*n;
+		a=((b+y*(a-b)/d%m*n%m)%m+m)%m;
+		if(m>1e18) break;
+	}
+	return a;
+}
+
+ll Bob(vector<pair<int,int>> V){
+	vector<pair<ll,ll>> eq;
+	for(auto [u,v] : V)
+		eq.emplace_back(v-1,u-1);
+    return CRT(eq);
 }

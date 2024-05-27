@@ -1,13 +1,14 @@
 #include <vector>
+#include <utility>
 #include "Alice.h"
 
-// you may define some global variables, but it does not work if you try to transfer any information from function Alice() to function Bob() through these variables.
-// you had better not use the same global variables in function Alice() and in function Bob().
+using namespace std;
 
-std::vector<std::pair<int,int>> Alice(){
-	// add your code here
-	
-	// change below into your code
-    long long x = setN(4);
-    return std::vector<std::pair<int,int>>{{1, 2}, {2, 3}, {2, 4}};
+vector<pair<int,int>> Alice(){
+	const int n = 75;
+    long long x = setN(n);
+	vector<pair<int,int>> ans;
+	for(int i=1; i<n; ++i)
+		ans.emplace_back(make_pair(x%i+1,i+1));
+    return ans;
 }
