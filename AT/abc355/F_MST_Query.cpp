@@ -54,9 +54,9 @@ template<> constexpr int inf<int> = 0x3f3f3f3f;
 template<> constexpr ll inf<ll> = 1ll << 60;
 
 #ifdef __SIZEOF_INT128__
-using LL = __int128;
-using uLL = unsigned __int128;
-template<> constexpr LL inf<LL> = LL(1) << 120;
+using i128 = __int128;
+using ui128 = unsigned __int128;
+template<> constexpr i128 inf<i128> = i128(1) << 120;
 #endif
 
 constexpr db eps = 1e-12;
@@ -167,8 +167,47 @@ int main() {
 	return 0;
 }
 
-void _main() {
+const int N = 2e5, C = 10;
 
+int n,q;
+
+struct dsu {
+	int fa[N + 2],sum;
+	int find(int u) { return fa[u]==u?u:fa[u]=find(fa[u]); }
+	void link(int u,int v) {
+		u=find(u),v=find(v);
+		if(u==v) return ;
+		--sum;
+		fa[u]=v;
+	}
+	dsu() {
+		for(int i=1; i<=n; ++i) fa[i]=i;
+		sum=n;
+	}
+};
+
+void _main() {
+	scanf("%d%d",&n,&q);
+	dsu p[C + 2];
+	auto insert = [&](int u,int v,int w) {
+		fo(i,w,C) p[i].link(u,v);
+	};
+	auto ans = [&]() {
+		int res=n-1;
+		fo(i,1,C) res+=p[i].sum-1;
+		return res;
+	};
+	fo(i,1,n-1) {
+		int u,v,w;
+		scanf("%d%d%d",&u,&v,&w);
+		insert(u,v,w);
+	}
+	fo(i,1,q) {
+		int u,v,w;
+		scanf("%d%d%d",&u,&v,&w);
+		insert(u,v,w);
+		printf("%d\n",ans());
+	}
 }
 
 void _init() {
