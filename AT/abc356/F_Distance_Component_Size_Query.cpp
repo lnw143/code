@@ -88,80 +88,54 @@ void _init() {
 
 const int Q = 2e5, N = Q, logN = 20;
 
+int n,q,t[N + 2];
+ll k,x[N + 2];
 vector<ll> v;
+set<int> st;
 
-int n,q,t[Q + 2],l[N + 2],r[N + 2];
-ll k,x[Q + 2];
+int id(ll x) {
+	return lower_bound(v.begin(),v.end(),x)-v.begin();
+}
 
-namespace fenwick {
-	int t[N + 2];
-	void add(int x) {
-		while(x<=n) {
-			++t[x];
-			x+=x&-x;
+struct segtree {
+	int t[N << 2];
+#define ls (u<<1)
+#define rs (ls|1)
+#define mid (l+r>>1)
+#define li ls,l,mid
+#define ri rs,mid+1,r
+	void modify(int u,int l,int r,int x,int y) {
+		if(r<x||x<l) return ;
+		if(l==r) {
+			t[u]=y;
+			return ;
 		}
+		if(x<=mid) modify(li,x,y);
+		else modify(ri,x,y);
+		t[u]=t[ls]+t[rs];
 	}
-	int sum(int x) {
-		int res=0;
-		while(x) {
-			res+=t[x];
-			x&=x-1;
-		}
-		return res;
+	int query(int u,int l,int r,int x,int y) {
+		if(r<x||y<l) return 0;
+		if(x<=l&&r<=y) return t[u];
+		return query(li,x,y)+query(ri,x,y);
 	}
-	int sum(int l,int r) {
-		return sum(r)-sum(l-1);
-	}
+#undef ls
+#undef rs
+#undef mid
+#undef li
+#undef ri
+} f,g;
+
+int pre(int x) {
+	return st.empty()||*st.begin()>=x?-1:*(--st.lower_bound(x));
 }
 
-namespace dsu {
-	int fa[logN][N + 2],l[logN][N + 2],r[logN][N + 2];
-	void init() {
-		fu(i,0,logN) fu(j,0,N) fa[i][j]=j,l[i][j]=r[i][j]=j;
-	}
-	int find(int k,int u) {
-		return fa[k][u]==u?u:fa[k][u]=find(k,fa[k][u]);
-	}
-	void link(int k,int x,int y) {
-		x=find(k,x),y=find(k,y);
-		if(x==y) return ;
-		fa[k][y]=x;
-		l[k][x]=min(l[k][x],l[k][y]);
-		r[k][x]=max(r[k][x],r[k][y]);
-		if(k==0) return ;
-		link(k-1,x,y);
-		link(k-1,x+(1<<(k-1)),y+(1<<(k-1)));
-	}
-	void merge(int x,int y,int len) {
-		fu(i,0,logN)
-			if(len&(1<<i)) {
-				link(i,x,y);
-				x+=1<<i;
-				y+=1<<i;
-			}
-	}
+int nxt(int x) {
+	return st.empty()||*st.rbegin()<=x?-1:*st.upper_bound(x);
 }
 
-int findl(int x) {
-	++x;
-	int l=1,r=x-1;
-	while(l<=r) {
-		int mid=(l+r)/2;
-		if(fenwick::sum(x-mid,x-1)) l=mid+1;
-		else r=mid-1;
-	}
-	return l-1;
-}
-
-int findr(int x) {
-	++x;
-	int l=1,r=n-x;
-	while(l<=r) {
-		int mid=(l+r)/2;
-		if(fenwick::sum(x+1,x+mid)) l=mid+1;
-		else r=mid-1;
-	}
-	return l-1;
+bool check(int l,int r) {
+	return f.query(1,0,n-1,l,r)>g.query(1,0,n-1,l,r);
 }
 
 void _main() {
@@ -173,22 +147,41 @@ void _main() {
 	sort(v.begin(),v.end());
 	v.erase(unique(v.begin(),v.end()),v.end());
 	n=v.size();
-	fu(i,0,n) {
-		l[i]=lower_bound(v.begin(),v.end(),v[i]-k)-v.begin();
-		r[i]=upper_bound(v.begin(),v.end(),v[i]+k)-v.begin()-1;
-	}
-	dsu::init();
 	fo(i,1,q) {
-		int p=lower_bound(v.begin(),v.end(),x[i])-v.begin();
+		const int p=id(x[i]);
 		if(t[i]==1) {
-			using namespace fenwick;
-			add(p+1);
-			int x=p-findl(p),y=p+findr(p);
-			dsu::merge(x,x+1,y-x);
-		}
-		else {
-			int u=dsu::find(0,p);
-			printf("%d\n",fenwick::sum(dsu::l[0][u]+1,dsu::r[0][u]+1));
+			const int l=pre(p),r=nxt(p);
+			if(st.count(p)) {
+				f.modify(1,0,n-1,p,0);
+				st.erase(p);
+				if(l!=-1&&x[i]-v[l]<=k) g.modify(1,0,n-1,l,(r!=-1&&v[r]-v[l]<=k));
+				g.modify(1,0,n-1,p,0);
+			} else {
+				f.modify(1,0,n-1,p,1);
+				st.insert(p);
+				g.modify(1,0,n-1,p,(r!=-1&&v[r]-x[i]<=k));
+				if(l!=-1) g.modify(1,0,n-1,l,(x[i]-v[l]<=k));
+			}
+		} else {
+			auto findR = [&]() -> int {
+				int l=p,r=n-1;
+				while(l<=r) {
+					int mid=(l+r)/2;
+					if(check(p,mid)) r=mid-1;
+					else l=mid+1;
+				}
+				return r+1;
+			};
+			auto findL = [&]() -> int {
+				int l=1,r=p;
+				while(l<=r) {
+					int mid=(l+r)/2;
+					if(check(mid-1,p-1)) l=mid+1;
+					else r=mid-1;
+				}
+				return l-1;
+			};
+			printf("%d\n",f.query(1,0,n-1,findL(),findR()));
 		}
 	}
 }

@@ -82,11 +82,11 @@ int main() {
 	return 0;
 }
 
-void _init() {
+void _main() {
 
 }
 
-void _main() {
+void _init() {
 
 }
 
