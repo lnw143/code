@@ -28,9 +28,7 @@ void solve(ll c,ll d) {
 	else {
 		int u=l-1;
 		if(v[u].x==v[u+1].x) printf("%.18lf\n",1.0*c/d*v[u].x);
-		else {
-			double k=
-		}
+		
 	}
 }
 int stk[N + 2],tp;
