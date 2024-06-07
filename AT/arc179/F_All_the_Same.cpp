@@ -36,8 +36,6 @@
 #define ebk emplace_back
 #define mkp make_pair
 #define mkt make_tuple
-#define fir first
-#define sec second
 #define all(v) v.begin(),v.end()
 #define debug(format,args...) fprintf(stderr,format,##args)
 #define error(message,args...) (debug(message,##args),exit(1))
@@ -63,7 +61,7 @@ void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
 void NO(bool f=true) { YES(!f); }
 const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
-// #define MULTITEST
+#define MULTITEST
 // #define FILE_IO_NAME ""
 
 void _main();
@@ -85,8 +83,44 @@ int main() {
 	return 0;
 }
 
-void _main() {
+const int N = 1e6;
 
+int n,v[N + 2],f[N + 2],g[N + 2];
+char s[N + 2];
+
+void dfs(int u) {
+	if(!u) return ;
+	dfs(g[u]);
+	int l=g[u]+1,r=u,s=v[u]-v[g[u]];
+	
+}
+
+void _main() {
+	scanf("%d%s",&n,s+1);
+	fo(i,1,n) {
+		if(s[i]=='A') v[i]=v[i-1]+2;
+		else v[i]=v[i-1]-1;
+	}
+	set<pair<int,int>> st;
+	pair<int,int> ans{-1e9,0};
+	fo(i,0,n) f[i]=0;
+	st.emplace(0,0);
+	fo(i,1,n)
+		if(v[i]>=0&&v[i]%6==0) {
+			auto it=--st.upper_bound({v[i],1e9});
+			f[i]=f[it->second]+1;
+			g[i]=it->second;
+			while(!st.empty()&&st.rbegin()->first>=v[i]&&f[st.rbegin()->second]<f[i]) st.erase(*st.rbegin());
+			st.emplace(v[i],i);
+			ans=max(ans,mkp(f[i],i));
+		}
+	if(ans.first<0) {
+		fo(i,1,n) putchar(s[i]=='A'?'1':'3');
+		putchar('\n');
+		return ;
+	}
+	int u=ans.second;
+	dfs(u);
 }
 
 void _init() {
