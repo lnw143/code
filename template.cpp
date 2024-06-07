@@ -36,6 +36,7 @@
 #define ebk emplace_back
 #define mkp make_pair
 #define mkt make_tuple
+#define all(v) v.begin(),v.end()
 #define debug(format,args...) fprintf(stderr,format,##args)
 #define error(message,args...) (debug(message,##args),exit(1))
 
