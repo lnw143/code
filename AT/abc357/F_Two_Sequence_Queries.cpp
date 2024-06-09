@@ -130,7 +130,7 @@ void _main() {
 	fo(i,1,n) scanf("%d",&a[i]);
 	fo(i,1,n) scanf("%d",&b[i]);
 	fo(i,1,q) {
-
+		
 	}
 }
 
