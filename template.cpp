@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstring>
 #include <queue>
+#include <cctype>
 #include <bitset>
 #include <random>
 #include <chrono>
