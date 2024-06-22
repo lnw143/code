@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include <cstdio>
 #include <complex>
 #include <cmath>
@@ -13,7 +14,15 @@ void FFT(comp *a,const int n,const int t) {
 	for(int i=0; i<n; i+=2)
 		a0[i>>1]=a[i],
 		a1[i>>1]=a[i+1];
-	
+	FFT(a0,m,t);
+	FFT(a1,m,t);
+	const comp omg_n{cos(2*M_PI/n),t*sin(2*M_PI/n)};
+	comp omg={1,0};
+	for(int i=0; i<m; ++i,omg*=omg_n) {
+		const comp u=a0[i],v=omg*a1[i];
+		a[i]=u+v;
+		a[i+m]=u-v;
+	}
 }
 int main() {
 	scanf("%d%d",&n,&m);
@@ -22,13 +31,19 @@ int main() {
 		scanf("%d",&x);
 		a[i]=x;
 	}
-	for(int i=0; i<=n; ++i) {
+	for(int i=0; i<=m; ++i) {
 		int x;
 		scanf("%d",&x);
 		b[i]=x;
 	}
 	k=1;
 	while(k<=n+m) k<<=1;
-
+	FFT(a,k,1);
+	FFT(b,k,1);
+	for(int i=0; i<k; ++i)
+		a[i]*=b[i];
+	FFT(a,k,-1);
+	for(int i=0; i<=n+m; ++i)
+		printf("%.0lf ",floor(a[i].real()/k+0.5));
 	return 0;
 }
