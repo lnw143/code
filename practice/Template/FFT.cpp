@@ -1,13 +1,29 @@
 #define _USE_MATH_DEFINES
 #include <cstdio>
+#include <algorithm>
 #include <complex>
 #include <cmath>
 using namespace std;
 const int N = 1 << 21;
 using comp = complex<double>;
-int n,m,k;
+int n,m,r[N + 2];
 comp a[N + 2],b[N + 2];
 void FFT(comp *a,const int n,const int t) {
+	for(int i=0; i<n; ++i)
+		if(i<r[i])
+			swap(a[i],a[r[i]]);
+	for(int i=1; i<n; i<<=1) {
+		const comp omg_n{cos(M_PI/i),t*sin(M_PI/i)};
+		for(int j=0; j<n; j+=(i<<1)) {
+			comp omg{1,0};
+			for(int k=0; k<i; ++k,omg*=omg_n) {
+				const comp u=a[j+k],v=omg*a[j+k+i];
+				a[j+k]=u+v;
+				a[j+k+i]=u-v;
+			}
+		}
+	}
+/*
 	if(n==1) return ;
 	const int m=n>>1;
 	comp a0[m],a1[m];
@@ -23,6 +39,7 @@ void FFT(comp *a,const int n,const int t) {
 		a[i]=u+v;
 		a[i+m]=u-v;
 	}
+*/
 }
 int main() {
 	scanf("%d%d",&n,&m);
@@ -36,8 +53,10 @@ int main() {
 		scanf("%d",&x);
 		b[i]=x;
 	}
-	k=1;
-	while(k<=n+m) k<<=1;
+	int k=1,s=0;
+	while(k<=n+m) k<<=1,++s;
+	for(int i=0; i<k; ++i)
+		r[i]=(r[i>>1]>>1)|((i&1)<<(s-1));
 	FFT(a,k,1);
 	FFT(b,k,1);
 	for(int i=0; i<k; ++i)
