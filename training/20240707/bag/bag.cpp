@@ -14,12 +14,8 @@ int main() {
 		int c,v;
 		scanf("%d%d",&c,&v);
 		vector<int> t;
-		for(int j=1; ; j<<=1) {
-			if(j>c) {
-				t.push_back(c);
-				break;
-			} else t.push_back(j),c-=j;
-		}
+		for(int j=1; j<=c; j<<=1) t.push_back(j),c-=j;
+		if(c) t.push_back(c);
 		for(int j=n; j>=1; --j) {
 			bitset<L + 2> cur;
 			for(auto k : t)
