@@ -52,7 +52,7 @@ template<typename T> using big_heap = priority_queue<T>;
 #define clock() chrono::steady_clock::now()
 const auto start_time = clock();
 template<typename T = double> T runtime() { return chrono::duration<T>(clock()-start_time).count(); }
-mt19937 rnd(random_device{}());
+mt19937 rnd(chrono::system_clock::now().time_since_epoch().count());
 int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
 ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
 double randpr(double l=0,double r=1) { return uniform_real_distribution<double>(l,r)(rnd); }
