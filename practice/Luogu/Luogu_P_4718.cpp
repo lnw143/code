@@ -1,150 +1,88 @@
-#pragma GCC optimize("O3,unroll-loops")
-
-#include<cstdio>
-#include<cmath>
-#include<cstdint>
-#include<map>
-#include<set>
-#include<vector>
-#include<algorithm>
-#include<cstring>
-#include<queue>
-#include<bitset>
-#include<random>
-#include<chrono>
-#include<cassert>
-#include<cstdlib>
-#include<complex>
-#include<deque>
-#include<functional>
-#include<iostream>
-#include<limits>
-#include<numeric>
-#include<iomanip>
-#include<string>
-#include<unordered_map>
-#include<unordered_set>
-#include<utility>
-
-#define rep(i,l,r) for(int i(l),i##End(r); i<=i##End; ++i)
-#define rep_(i,l,r) for(int i(l),i##End(r); i<i##End; ++i)
-#define per(i,l,r) for(int i(r),i##End(l); i>=i##End; --i)
-#define per_(i,l,r) for(int i(r),i##End(l); i>i##End; --i)
-
-#define pbk push_back
-#define ebk emplace_back
-#define mkp make_pair
-#define endl '\n'
-
+#include <cstdio>
+#include <random>
+#include <chrono>
+#include <algorithm>
+#include <cmath>
 using namespace std;
-
 using ll = long long;
-using llu = long long unsigned;
-using db = double;
-using ldb = long double;
-
-template<typename T> constexpr T inf = 0;
-template<> constexpr int inf<int> = 1e9;
-template<> constexpr ll inf<ll> = 1e18;
-template<> constexpr db inf<db> = 1e18;
-template<> constexpr ldb inf<ldb> = 1e18;
-constexpr db eps = 1e-12;
-
-template<typename T> using vec = vector<T>;
-template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
-template<typename T> using big_heap = priority_queue<T>;
-
-#define clock() chrono::steady_clock::now()
-const auto start_time = clock();
-template<typename T = db> T runtime() { return chrono::duration<T>(clock()-start_time).count(); }
-
-mt19937 rnd(random_device{}());
-int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
-ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
-db randpr(db l=0,db r=1) { return uniform_real_distribution<db>(l,r)(rnd); }
-
-void Yes(bool f=true) { cout<<(f?"Yes":"No")<<endl; }
-void No(bool f=true) { Yes(!f); }
-void yes(bool f=true) { cout<<(f?"yes":"no")<<endl; }
-void no(bool f=true) { yes(!f); }
-void YES(bool f=true) { cout<<(f?"YES":"NO")<<endl; }
-void NO(bool f=true) { YES(!f); }
-
-template<typename Tp1,typename Tp2> bool umx(Tp1 &x,Tp2 y) { return y>x?x=y,true:false; }
-template<typename Tp1,typename Tp2> bool umn(Tp1 &x,Tp2 y) { return y<x?x=y,true:false; }
-
+int T;
+ll n,maxf;
+mt19937 rnd(chrono::steady_clock::now().time_since_epoch().count());
+ll randint(ll l,ll r) {
+	return uniform_int_distribution<ll>(l,r)(rnd);
+}
+ll mul(ll a,ll b,ll p) {
+	ll c=1.0l*a/p*b;
+	return (ll(1ull*a*b-1ull*c*p)+p)%p;
+}
 ll qpow(ll a,ll n,ll p) {
+	a%=p;
 	ll x=1;
-	for(; n; n>>=1,a=a*a%p) if(n&1) x=x*a%p;
+	for(; n; n>>=1,a=mul(a,a,p)) if(n&1) x=mul(x,a,p);
 	return x;
 }
-
-template<int P> struct ModInt {
-  public:
-	using mint = ModInt<P>;
-	using mintp = mint&;
-
-	operator const int&() { return x; }
-
-	mint operator+(const int& t) const { return x+t>=P?x+t-P:x+t; }
-	mint operator-(const int& t) const { return x<t?x-t+P:x-t; }
-	mintp operator+=(const int& t) { return ((x+=t)>=P)&&(x-=P),(*this); }
-	mintp operator-=(const int& t) { return ((x-=t)<0)&&(x+=P),(*this); }
-
-	mint operator++(int) { return (++x>=P)?x=0,P-1:x-1;}
-	mint operator--(int) { return (--x<0)?x=P-1,0:x+1;}
-	mintp operator++() { return (++x>=P)?x=0,(*this):(*this);}
-	mintp operator--() { return (--x<0)?x=P-1,(*this):(*this);}
-
-	mint operator*(const int& t) const { return (ll)x*t%P; }
-	mintp operator*=(const int& t) { return x=(ll)x*t%P,(*this); }
-
-	int v() { return x; }
-
-	ModInt():x(0) {}
-	template<typename Tp> ModInt(Tp y) {
-		if(y<0) x=y%P+P;
-		else if(y<P) x=y;
-		else x=y%P;
+bool miller_rabin(ll n) {
+	if(n<3) return n==2;
+	if(n%2==0) return false;
+	ll s=n-1,t=0;
+	while(s%2==0) s/=2,++t;
+	for(int i=0; i<8; ++i) {
+		ll x=randint(2,n-1),u=qpow(x,s,n);
+		if(u==1) continue;
+		{
+			int j;
+			for(j=0; j<t; ++j) {
+				if(u==n-1) break;
+				u=mul(u,u,n);
+			}
+			if(j==t) return false;
+		}
 	}
-  private:
-	int x;
-};
-
-constexpr int
-	N = 0,
-	M = 0,
-	K = 0,
-	Q = 0,
-	S = 0,
-	P = 998244353// 1e9 + 7
-;
-
-using mint = ModInt<P>::mint;
-
-// #define MULTITEST
-// #define FILE_IO_NAME ""
-
-void _main() {
-
+	return true;
 }
-
-void _init() {
-
+ll gcd(ll a,ll b) {
+	return !b?a:gcd(b,a%b);
 }
-
+ll pollard_rho(ll n) {
+	const ll c = randint(1,n-1);
+	const auto f = [&](ll x) -> ll {
+		return (mul(x,x,n)+c)%n;
+	};
+	ll s=0,t=0,v=1;
+	for(int j=1; ; j<<=1,t=s,v=1) {
+		for(int i=1; i<=j; ++i) {
+			s=f(s);
+			v=mul(v,abs(s-t),n);
+			if(!v) return n;
+			if(i%127==0) {
+				ll d=gcd(v,n);
+				if(d>1) return d;
+			}
+		}
+		ll d=gcd(v,n);
+		if(d>1) return d;
+	}
+	return n;
+}
+void split(ll x) {
+	if(x<=maxf||x<2||miller_rabin(x)) {
+		maxf=max(maxf,x);
+		return ;
+	}
+	ll d=x;
+	while(d==x) d=pollard_rho(x);
+	while(x%d==0) x/=d;
+	split(x);
+	split(d);
+}
 int main() {
-#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
-	freopen(FILE_IO_NAME".in","r",stdin);
-	freopen(FILE_IO_NAME".out","w",stdout);
-#endif
-	ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
-	cout<<fixed<<setprecision(15);
-	_init();
-	int T=1;
-#if defined(MULTITEST)
-	cin>>T;
-#endif
-	while(T--) _main();
+	scanf("%d",&T);
+	while(T--) {
+		scanf("%lld",&n);
+		maxf=0;
+		split(n);
+		if(maxf==n) printf("Prime\n");
+		else printf("%lld\n",maxf);
+	}
 	return 0;
 }
