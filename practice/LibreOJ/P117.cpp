@@ -35,11 +35,10 @@ namespace netflow {
 	int dfs(int u,int rem,const int t) {
 		if(u==t) return rem;
 		int r=rem;
-		for(int i=cur[u]; i<e[u].size(); ++i) {
+		for(int &i=cur[u]; i<e[u].size(); ++i) {
 			auto& [v,w,id]=e[u][i];
 			if(dep[v]!=dep[u]+1||!w) continue;
 			int f=dfs(v,min(w,rem),t);
-			cur[u]=i;
 			w-=f;
 			e[v][id].w+=f;
 			r-=f;
