@@ -88,8 +88,6 @@ int main() {
 
 ll n;
 
-vector<ll> fac;
-
 ll rev(ll x) {
 	ll y=0;
 	for(; x; x/=10) y=y*10+x%10;
@@ -103,72 +101,25 @@ bool cont0(ll x) {
 	return false;
 }
 
-bool check() {
-	map<ll,int> mp;
-	vector<ll> ans,ans2;
-	for(auto i : fac)
-		++mp[i];
-	ll mid=-1;
-	for(auto [i,j] : mp) {
-		ll i_=rev(i);
-		if(i==i_&&j%2==1) {
-			if(mid!=-1) return false;
-			mid=i;
+string dfs(ll x) {
+	if(rev(x)==x&&!cont0(x)) return to_string(x);
+	const auto test = [&](ll y) -> string {
+		if(!cont0(y)&&x%y==0&&x/y%rev(y)==0) {
+			string res=dfs(x/y/rev(y));
+			return res.empty()?"":to_string(y)+"*"s+res+"*"s+to_string(rev(y));
 		}
-		if(i<=i_) {
-			fo(k,1,i==i_?j/2:j)
-				ans.pbk(i);
-		}
-	}
-	if(mid!=-1) ans.pbk(mid);
-	for(auto [i,j] : mp) {
-		ll i_=rev(i);
-		if(i>=i_) {
-			fo(k,1,i==i_?j/2:j)
-				ans2.pbk(i);
-		}
-	}
-	fd(i,ans2.size()-1,0)
-		ans.pbk(ans2[i]);
-	string str="";
-	str+=to_string(ans[0]);
-	fo(i,1,ans.size()-1)
-		str+='*',
-		str+=to_string(ans[i]);
-	if(str.size()<=1000) {
-		cout<<str;
-		return true;
-	}
-	return false;
-}
-
-bool dfs(ll x) {
-	if(x<2) return check();
-	const auto test = [&](ll y) -> bool {
-		ll z=rev(y);
-		if(!cont0(y)) {
-			if(x/y%z==0) {
-				fac.push_back(y);
-				fac.push_back(z);
-				if(dfs(x/y/z)) return true;
-				fac.pop_back();
-				fac.pop_back();
-			}
-			if(y==z) {
-				fac.pbk(y);
-				if(dfs(x/y)) return true;
-				fac.pop_back();
-			}
-		}
-		return false;
+		return "";
 	};
 	for(ll i=2; i*i<=x; ++i) 
 		if(x%i==0) {
-			if(test(i)) return true;
-			if(i*i!=x) 	
-				if(test(x/i)) return true;
+			string res=test(i);
+			if(res.size()) return res;
+			if(i*i!=x) {
+				res=test(x/i);
+				if(res.size()) return res;
+			}
 		}
-	return test(x);
+	return "";
 }
 
 void _main() {
@@ -177,7 +128,9 @@ void _main() {
 		printf("1");
 		return ;
 	}
-	if(!dfs(n)) printf("-1");
+	string ans=dfs(n);
+	if(1<=ans.size()&&ans.size()<=1000) printf("%s",ans.c_str());
+	else printf("-1");
 }
 
 void _init() {
