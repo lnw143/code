@@ -37,8 +37,8 @@
 #define ebk emplace_back
 #define mkp make_pair
 #define mkt make_tuple
-#define fir first
-#define sec second
+#define fst first
+#define scd second
 #define all(v) v.begin(),v.end()
 #define debug(format,args...) fprintf(stderr,format,##args)
 #define error(message,args...) (debug(message,##args),exit(1))
@@ -46,8 +46,7 @@
 using namespace std;
 using ll = long long;
 char address_head;
-#define vec vector
-template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
+template<typename T> using heap = priority_queue<T,vector<T>,greater<T>>;
 template<typename T> using big_heap = priority_queue<T>;
 #define clock() chrono::steady_clock::now()
 const auto start_time = clock();
@@ -62,7 +61,7 @@ void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
 void no(bool f=true) { yes(!f); }
 void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
 void NO(bool f=true) { YES(!f); }
-const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+const vector<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
@@ -86,28 +85,48 @@ int main() {
 	return 0;
 }
 
-const int N = 2e5, Q = 2e5;
+const int N = 4e3, K = 10, S = 1 << K - 1;
 
-int n,q,l[Q + 2],r[Q + 2],v[N + 2];
-ll c[Q + 2],ans;
+int n,m,k;
 
-bitset<N + 2> bs;
+ll f[S + 2][N + 2];
+
+vector<pair<int,int>> e[N + 2];
+
+void dijkstra(ll *dis) {
+	heap<pair<ll,int>> hp;
+	fo(i,1,n) hp.emplace(dis[i],i);
+	while(!hp.empty()) {
+		auto [d,u]=hp.top();
+		hp.pop();
+		if(dis[u]!=d) continue;
+		for(auto [v,w] : e[u])
+			if(d+w<dis[v]) {
+				dis[v]=d+w;
+				hp.emplace(dis[v],v);
+			}
+	}
+}
 
 void _main() {
-	scanf("%d%d",&n,&q);
-	fo(i,1,q) scanf("%d%d%lld",&l[i],&r[i],&c[i]);
-	fo(i,1,q) v[i]=i;
-	sort(v+1,v+q+1,[](int x,int y){ return c[x]<c[y]; });
-	fo(i,2,n) bs[i]=1;
-	fo(i,1,q) {
-		ans+=c[v[i]];
-		for(int j=bs._Find_next(l[v[i]]); j<=r[v[i]]; j=bs._Find_next(j)) {
-			ans+=c[v[i]];
-			bs[j]=0;
-		}
+	scanf("%d%d%d",&n,&m,&k);
+	fo(i,1,m) {
+		int u,v,w;
+		scanf("%d%d%d",&u,&v,&w);
+		e[u].ebk(v,w);
+		e[v].ebk(u,w);
 	}
-	if(bs.any()) printf("-1");
-	else printf("%lld",ans);
+	memset(f,0x3f,sizeof(f));
+	fo(i,1,k-1)
+		f[1<<(i-1)][i]=0;
+	fo(i,0,(1<<(k-1))-1) {
+		fo(k,1,n)
+			for(int j=i; j; --j&=i)
+				f[i][k]=min(f[i][k],f[j][k]+f[i^j][k]);
+		dijkstra(f[i]);
+	}
+	fo(i,k,n)
+		printf("%lld\n",f[(1<<(k-1))-1][i]);
 }
 
 void _init() {

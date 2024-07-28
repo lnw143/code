@@ -86,28 +86,31 @@ int main() {
 	return 0;
 }
 
-const int N = 2e5, Q = 2e5;
+const int N = 80, X = 1e4;
 
-int n,q,l[Q + 2],r[Q + 2],v[N + 2];
-ll c[Q + 2],ans;
-
-bitset<N + 2> bs;
+int n,x,y,a[N + 2],b[N + 2],f[N + 2][N + 2][X + 2];
 
 void _main() {
-	scanf("%d%d",&n,&q);
-	fo(i,1,q) scanf("%d%d%lld",&l[i],&r[i],&c[i]);
-	fo(i,1,q) v[i]=i;
-	sort(v+1,v+q+1,[](int x,int y){ return c[x]<c[y]; });
-	fo(i,2,n) bs[i]=1;
-	fo(i,1,q) {
-		ans+=c[v[i]];
-		for(int j=bs._Find_next(l[v[i]]); j<=r[v[i]]; j=bs._Find_next(j)) {
-			ans+=c[v[i]];
-			bs[j]=0;
-		}
+	scanf("%d%d%d",&n,&x,&y);
+	fo(i,1,n) scanf("%d%d",&a[i],&b[i]);
+	memset(f,0x3f,sizeof(f));
+	f[0][0][0]=0;
+	fo(i,1,n)
+		fo(j,0,i)
+			fo(k,0,x) {
+				f[i][j][k]=f[i-1][j][k];
+				if(j>0&&k>=a[i]) f[i][j][k]=min(f[i][j][k],f[i-1][j-1][k-a[i]]+b[i]);
+			}
+	fo(i,1,n) {
+		bool ok=false;
+		fo(j,0,x)
+			if(f[n][i][j]<=y) {
+				ok=true;
+				break;
+			}
+		if(!ok) return printf("%d",i),void();
 	}
-	if(bs.any()) printf("-1");
-	else printf("%lld",ans);
+	printf("%d",n);
 }
 
 void _init() {
