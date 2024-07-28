@@ -37,8 +37,8 @@
 #define ebk emplace_back
 #define mkp make_pair
 #define mkt make_tuple
-#define fir first
-#define sec second
+#define fst first
+#define scd second
 #define all(v) v.begin(),v.end()
 #define debug(format,args...) fprintf(stderr,format,##args)
 #define error(message,args...) (debug(message,##args),exit(1))
@@ -46,8 +46,7 @@
 using namespace std;
 using ll = long long;
 char address_head;
-#define vec vector
-template<typename T> using heap = priority_queue<T,vec<T>,greater<T>>;
+template<typename T> using heap = priority_queue<T,vector<T>,greater<T>>;
 template<typename T> using big_heap = priority_queue<T>;
 #define clock() chrono::steady_clock::now()
 const auto start_time = clock();
@@ -62,7 +61,7 @@ void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
 void no(bool f=true) { yes(!f); }
 void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
 void NO(bool f=true) { YES(!f); }
-const vec<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+const vector<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
 
 // #define MULTITEST
 // #define FILE_IO_NAME ""
