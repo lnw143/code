@@ -33,7 +33,7 @@ namespace pdsu {
 		su.emplace_back(u,sz[u]);
 		sz[u]+=sz[v];
 		tu.push_back(tot);
-		if(odd(sz[v])&&!odd(sz[u])) --tot;
+		if(odd(sz[v])&&!odd(sz[u])) tot-=2;
 	}
 	int current() {
 		return fu.size();
@@ -64,8 +64,10 @@ void solve(int l,int r,int x,int y) {
 	const int point2=pdsu::current();
 	ans[mid]=num.size()+1;
 	for(int i=x; i<=y; ++i) {
-		for(auto j=lower_bound(p[i].begin(),p[i].end(),l); j!=p[i].end()&&*j<=mid; ++j)
-			pdsu::merge(e[*j].u,e[*j].v);
+		for(auto j : p[i]) {
+			if(j>mid) break;
+			pdsu::merge(e[j].u,e[j].v);
+		}
 		if(pdsu::tot==0) {
 			ans[mid]=i;
 			break;
@@ -75,8 +77,10 @@ void solve(int l,int r,int x,int y) {
 	solve(mid+1,r,x,ans[mid]);
 	pdsu::undo(point1);
 	if(ans[mid]<=num.size()) for(int i=x; i<ans[mid]; ++i)
-		for(auto j=lower_bound(p[i].begin(),p[i].end(),l); j!=p[i].end()&&*j<=mid; ++j)
-			pdsu::merge(e[*j].u,e[*j].v);
+		for(auto j : p[i]) {
+			if(j>=l) break;
+			pdsu::merge(e[j].u,e[j].v);
+		}
 	solve(l,mid-1,ans[mid],y);
 }
 int main() {
@@ -86,6 +90,7 @@ int main() {
 	for(int i=1; i<=m; ++i) num.push_back(e[i].w);
 	sort(num.begin(),num.end());
 	for(int i=1; i<=m; ++i) e[i].w=lower_bound(num.begin(),num.end(),e[i].w)-num.begin()+1,p[e[i].w].push_back(i);
+	pdsu::init();
 	solve(1,m,1,num.size());
 	for(int i=1; i<=m; ++i) {
 		if(ans[i]>num.size()) printf("-1\n");
