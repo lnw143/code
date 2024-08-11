@@ -5,11 +5,10 @@
 using namespace std;
 const int N = 1e5, M = 3e5;
 int n,m;
-vector<int> num;
 struct edge {
 	int u,v,w;
 } e[M + 2];
-vector<int> p[M + 2];
+int p[M + 2],q[M + 2];
 int odd(int x) {
 	return x&1;
 }
@@ -51,50 +50,42 @@ namespace pdsu {
 }
 int ans[M + 2];
 void solve(int l,int r,int x,int y) {
-	if(l>r) return ;
-	if(x>y) {
-		for(int i=l; i<=r; ++i) ans[i]=num.size()+1;
-		return ;
-	}
+	if(l>r||x>y) return ;
 	const int point1=pdsu::current();
 	int mid=(l+r)/2;
 	for(int i=l; i<=mid; ++i)
-		if(e[i].w<x)
+		if(q[i]<x)
 			pdsu::merge(e[i].u,e[i].v);
 	const int point2=pdsu::current();
-	ans[mid]=num.size()+1;
 	for(int i=x; i<=y; ++i) {
-		for(auto j : p[i]) {
-			if(j>mid) break;
-			pdsu::merge(e[j].u,e[j].v);
-		}
+		if(p[i]<=mid) pdsu::merge(e[p[i]].u,e[p[i]].v);
 		if(pdsu::tot==0) {
 			ans[mid]=i;
 			break;
 		}
 	}
 	pdsu::undo(point2);
-	solve(mid+1,r,x,ans[mid]);
+	solve(mid+1,r,x,!ans[mid]?y:ans[mid]);
 	pdsu::undo(point1);
-	if(ans[mid]<=num.size()) for(int i=x; i<ans[mid]; ++i)
-		for(auto j : p[i]) {
-			if(j>=l) break;
-			pdsu::merge(e[j].u,e[j].v);
-		}
-	solve(l,mid-1,ans[mid],y);
+	for(int i=x; i<ans[mid]; ++i)
+		if(p[i]<l)
+			pdsu::merge(e[p[i]].u,e[p[i]].v);
+	if(ans[mid]) solve(l,mid-1,ans[mid],y);
 }
 int main() {
 	scanf("%d%d",&n,&m);
 	for(int i=1; i<=m; ++i)
-		scanf("%d%d%d",&e[i].u,&e[i].v,&e[i].w);
-	for(int i=1; i<=m; ++i) num.push_back(e[i].w);
-	sort(num.begin(),num.end());
-	for(int i=1; i<=m; ++i) e[i].w=lower_bound(num.begin(),num.end(),e[i].w)-num.begin()+1,p[e[i].w].push_back(i);
+		scanf("%d%d%d",&e[i].u,&e[i].v,&e[i].w),
+		p[i]=i;
+	sort(p+1,p+m+1,[](int x,int y) {
+		return e[x].w<e[y].w;
+	});
+	for(int i=1; i<=m; ++i) q[p[i]]=i;
 	pdsu::init();
-	solve(1,m,1,num.size());
+	solve(1,m,1,m);
 	for(int i=1; i<=m; ++i) {
-		if(ans[i]>num.size()) printf("-1\n");
-		else printf("%d\n",num[ans[i]-1]);
+		if(!ans[i]) printf("-1\n");
+		else printf("%d\n",e[p[ans[i]]].w);
 	}
 	return 0;
 }
