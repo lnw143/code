@@ -2,3 +2,6 @@
 
 [代码模板](template.cpp)
 
+[fread 快读](fread.cpp)
+
+[mmap 快读](mmap.cpp)
