@@ -40,8 +40,13 @@
 #define fst first
 #define scd second
 #define all(v) v.begin(),v.end()
+#ifdef ONLINE_JUDGE
+#define debug(format,args...) void()
+#define error(message,args...) void()
+#else
 #define debug(format,args...) fprintf(stderr,format,##args)
 #define error(message,args...) (debug(message,##args),exit(1))
+#endif
 
 using namespace std;
 using ll = long long;
