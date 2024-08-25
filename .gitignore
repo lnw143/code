@@ -6,6 +6,7 @@
 *.ans
 *.std
 *.txt
+*.log
 *.bin
 std.cpp
 test.cpp
