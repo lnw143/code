@@ -94,21 +94,11 @@ const int N = 2e5;
 int n,p[N + 2],a[N + 2],b[N + 2],num[N + 2];
 bool bz[N + 2];
 
-ll exgcd(ll a,ll b,ll &x,ll &y) {
-	if(!b) {
-		x=1,y=0;
-		return a;
-	}
-	ll d=exgcd(b,a%b,y,x);
-	y-=a/b*x;
-	return d;
-}
-
 void _main() {
 	scanf("%d",&n);
 	fo(i,1,n) scanf("%d",&p[i]);
 	fo(i,1,n) scanf("%d",&a[i]);
-	set<pair<ll,ll>> st;
+	map<int,int> mp;
 	fo(i,1,n) {
 		if(bz[i]) continue;
 		int s=num[i]=0;
@@ -122,19 +112,16 @@ void _main() {
 		int k=0;
 		for(auto j : c) {
 			bool ok=true;
-			for(auto [m,r] : st) {
-				ll x,y;
-				ll d=exgcd(m,c.size(),x,y);
-				if((num[j]-r)%d!=0) {
+			for(auto [m,r] : mp)
+				if((num[j]-r)%__gcd(m,(int)c.size())!=0) {
 					ok=false;
 					break;
 				}
-			}
 			if(!ok) continue;
 			k=num[j];
 			break;
 		}
-		st.emplace(c.size(),k);
+		mp[c.size()]=k;
 		sort(all(c),[](int x,int y) { return num[x]<num[y]; });
 		fo(j,0,c.size()-1)
 			b[c[(j-k+c.size())%c.size()]]=a[c[j]];
