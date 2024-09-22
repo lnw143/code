@@ -4,8 +4,5 @@ do
 ./std < .in > .ans
 ./code < .in > .out
 diff .ans .out
-ret=$?
-if [ ! $ret == 0 ]; then
-sleep 10000
-fi
+if (($?!=0)); then break; fi
 done
