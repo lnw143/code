@@ -90,31 +90,32 @@ int main() {
 	return 0;
 }
 
-using db = long double;
-
 const int N = 2e5;
 
-const db eps = 1e-8;
+const long double eps = 1e-12;
 
 int n,m;
 
 ll ans;
 
 struct line {
-	db k,b;
-	db operator()(const db x) const {
-		return k*x+b;
+	ll a,b,c;
+	long double k,b_;
+	db operator()(ll x) const {
+		return (c-a*x)*1.0l/b;
 	}
 	line()=default;
-	line(ll a,ll b,ll c):k((db)-a/b),b((db)c/b) {}
+	line(ll a,ll b,ll c):a(a),b(b),c(c),k(-a*1.0l/b),b_(c*1.0l/b) {}
 } a[N + 2],b[N + 2];
 
-db operator*(const line& x,const line& y) {
+long double operator*(const line& x,const line& y) {
+	if(abs(x.k-y.k)<eps) return -1e20l;
 	return (y.b-x.b)/(x.k-y.k);
 }
 
-bool operator/(const line& x,const line& y) {
-	return abs(x.k-y.k)<eps;
+bool operator<(const line& x,const line& y) {
+	if(abs(x.k-y.k)<eps) return x.c*y.b>y.c*x.b;
+	return x.a*y.b<y.a*x.b;
 }
 
 void solve(db L,db R,const line& x) {
@@ -135,10 +136,9 @@ void _main() {
 		scanf("%d%d%d",&u,&v,&w);
 		a[i]=line(u,v,w);
 	}
-	sort(a+1,a+n+1,[](const line& x,const line& y) { return x.k>y.k||(x/y)&&x.b<y.b; });
+	sort(a+1,a+n+1);
 	m=0;
 	fo(i,1,n) {
-		if(i!=1&&a[i]/a[i-1]) continue;
 		while(m>=2&&b[m-1]*b[m]>b[m]*a[i]) --m;
 		b[++m]=a[i];
 	}
