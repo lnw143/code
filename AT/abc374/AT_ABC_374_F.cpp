@@ -1,0 +1,133 @@
+// #pragma GCC optimize("O3,unroll-loops")
+
+// #pragma GCC optimize("Ofast,inline,unroll-loops,fast-math,no-stack-protector")
+// #pragma GCC target("sse,sse2,avx,avx2,bmi,bmi2,lzcnt,popcnt,avx512vl,avx512f,tune=native")
+
+#include <cstdio>
+#include <cmath>
+#include <cstdint>
+#include <map>
+#include <set>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <queue>
+#include <cctype>
+#include <bitset>
+#include <random>
+#include <chrono>
+#include <cassert>
+#include <cstdlib>
+#include <complex>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <limits>
+#include <numeric>
+#include <iomanip>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+
+#define fo(i,l,r) for(int i(l),i##END(r); i<=i##END; ++i)
+#define fd(i,l,r) for(int i(l),i##END(r); i>=i##END; --i)
+#define fu(i,l,r) for(int i(l),i##END(r); i<i##END; ++i)
+#define pbk push_back
+#define ebk emplace_back
+#define mkp make_pair
+#define mkt make_tuple
+#define fst first
+#define scd second
+#define all(v) v.begin(),v.end()
+#ifdef ONLINE_JUDGE
+#define debug(format,args...) void()
+#define error(message,args...) void()
+#else
+#define debug(format,args...) fprintf(stderr,format,##args)
+#define error(message,args...) (debug(message,##args),exit(1))
+#endif
+
+using namespace std;
+using ll = long long;
+char address_head;
+template<typename T> using heap = priority_queue<T,vector<T>,greater<T>>;
+template<typename T> using big_heap = priority_queue<T>;
+#define clock() chrono::steady_clock::now()
+const auto start_time = clock();
+template<typename T = double> T runtime() { return chrono::duration<T>(clock()-start_time).count(); }
+mt19937 rnd(chrono::system_clock::now().time_since_epoch().count());
+int randint(int l,int r) { return uniform_int_distribution<int>(l,r)(rnd); }
+ll randll(ll l,ll r) { return uniform_int_distribution<ll>(l,r)(rnd); }
+double randpr(double l=0,double r=1) { return uniform_real_distribution<double>(l,r)(rnd); }
+void Yes(bool f=true) { printf(f?"Yes\n":"No\n"); }
+void No(bool f=true) { Yes(!f); }
+void yes(bool f=true) { printf(f?"yes\n":"no\n"); }
+void no(bool f=true) { yes(!f); }
+void YES(bool f=true) { printf(f?"YES\n":"NO\n"); }
+void NO(bool f=true) { YES(!f); }
+const vector<pair<int,int>> way4{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, way4_{{1, 1}, {-1, 1}, {1, -1}, {-1, -1}}, way8{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+
+// #define MULTITEST
+// #define FILE_IO_NAME ""
+
+void _main();
+void _init();
+char* last_address();
+
+int main() {
+#if defined(FILE_IO_NAME) && !defined(ONLINE_JUDGE)
+	freopen(FILE_IO_NAME".in","r",stdin);
+	freopen(FILE_IO_NAME".out","w",stdout);
+#endif
+	_init();
+	int T=1;
+	debug("Memory:%.8lfMib\n",double(last_address()-&address_head)/pow(2,20));
+#if defined(MULTITEST)
+	scanf("%d",&T);
+#endif
+	while(T--) _main();
+	return 0;
+}
+
+const int N = 100;
+const ll inf = 0x3f3f3f3f3f3f3f3fll;
+
+int n,k;
+ll t[N + 2],s[N + 2],x;
+
+ll f[N + 2][N + 2][N + 2];
+
+ll cost(int l,int r,ll time) {
+	return (r-l+1)*time-(s[r]-s[l-1]);
+}
+
+void _main() {
+	scanf("%d%d%lld",&n,&k,&x);
+	fo(i,1,n) scanf("%lld",&t[i]),s[i]=s[i-1]+t[i];
+	memset(f,0x3f,sizeof(f));
+	f[0][0][0]=0;
+	t[0]=-x;
+	fo(i,0,n-1)
+		fo(j,0,i)
+			fo(p,0,n)
+				if(f[i][j][p]<inf)
+					fo(to,i+1,min(n,i+k))
+						if(t[j]+p*x+x<=t[to]) {
+							f[to][to][0]=min(f[to][to][0],f[i][j][p]+cost(i+1,to,t[to]));
+						} else {
+							f[to][j][p+1]=min(f[to][j][p+1],f[i][j][p]+cost(i+1,to,t[j]+p*x+x));
+						}
+	ll ans=inf;
+	fo(i,0,n) fo(j,0,n) ans=min(ans,f[n][i][j]);
+	printf("%lld",ans);
+}
+
+void _init() {
+
+}
+
+char* last_address() {
+	static char address_tail;
+	return &address_tail;
+}	
