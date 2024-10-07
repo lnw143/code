@@ -90,87 +90,40 @@ int main() {
 	return 0;
 }
 
-const int N = 2e5;
-
-int n,m,p,s[N + 2],fa[N + 2],anc[N + 2];
-int pa[N * 2 + 2],son[N * 2 + 2][2],sz[N * 2 + 2];
-bool bz[N * 2 + 2];
-ll f[N * 2 + 2],w[N * 2 + 2];
-int g[N * 2 + 2];
-
-struct edge {
-	int u,v,w;
-} eg[N + 2];
-
-int find(int u) {
-	return fa[u]==u?u:fa[u]=find(fa[u]);
-}
-
-void merge(int u,int v) {
-	fa[find(u)]=find(v);
-}
-
-void dfs(int u) {
-	if(!son[u][0]) {
-		f[u]=0;
-		g[u]=u;
-	} else {
-		int x=son[u][0],y=son[u][1];
-		dfs(x),dfs(y);
-		if(f[x]+w[u]*sz[y]<f[y]+w[u]*sz[x]) {
-			f[u]=f[x]+w[u]*sz[y];
-			g[u]=g[x];
-		} else {
-			f[u]=f[y]+w[u]*sz[x];
-			g[u]=g[y];
-		}
-		sz[u]=sz[x]+sz[y];
-	}
-}
-
 void _main() {
-	scanf("%d%d%d",&n,&m,&p);
-	fo(i,1,p) scanf("%d",&s[i]);
-	fo(i,1,m) scanf("%d%d%d",&eg[i].u,&eg[i].v,&eg[i].w);
-	sort(eg+1,eg+m+1,[](auto x,auto y) { return x.w<y.w; });
-	fo(i,1,n) fa[i]=anc[i]=i;
-	int c=n;
-	fo(i,1,m) {
-		auto [u,v,weight]=eg[i];
-		if(find(u)!=find(v)) {
-			int x=anc[find(u)],y=anc[find(v)];
-			pa[x]=pa[y]=++c;
-			son[c][0]=x;
-			son[c][1]=y;
-			w[c]=weight;
-			merge(u,v);
-			anc[find(u)]=c;
+	int n,m;
+	scanf("%d%d",&n,&m);
+	vector<vector<ll>> a(n+2,vector<ll>(m+2,0));
+	vector<vector<ll>> s=a,t=a,pre=a,suf=a;
+	vector<vector<ll>> f(n+2,vector<ll>(m+2,-1e18)),g=f;
+	fo(i,1,n) fo(j,1,m) scanf("%lld",&a[i][j]);
+	fo(i,1,n) {
+		fo(j,1,m) {
+			s[i][j]=s[i][j-1]+a[i][j];
+			pre[i][j]=max(pre[i][j-1],0ll)+a[i][j];
+		}
+		fd(j,m,1) {
+			t[i][j]=t[i][j+1]+a[i][j];
+			suf[i][j]=max(suf[i][j+1],0ll)+a[i][j];
 		}
 	}
-	fo(i,1,p) sz[s[i]]=1;
-	pa[c]=0;
-	dfs(c);
-	heap<pair<ll,int>> hp;
-	ll ans=f[c];
-	for(int i=g[c]; pa[i]&&!bz[pa[i]]; i=pa[i]) {
-		int v=son[pa[i]][son[pa[i]][0]==i];
-		hp.emplace(f[v]-sz[v]*w[pa[i]],v);
-		bz[pa[i]]=true;
+	fo(j,1,m) {
+		f[1][j]=pre[1][j];
+		g[1][j]=suf[1][j];
 	}
-	printf("%lld ",ans);
 	fo(i,2,n) {
-		auto [val,u]=hp.top();
-		hp.pop();
-		ans+=val;
-		for(int i=g[u]; pa[i]&&!bz[pa[i]]; i=pa[i]) {
-			int v=son[pa[i]][son[pa[i]][0]==i];
-			hp.emplace(f[v]-sz[v]*w[pa[i]],v);
-			bz[pa[i]]=true;
+		ll maxn=-1e18;
+		fo(j,1,m) {
+			f[i][j]=s[i][j]+maxn;
+			maxn=max(maxn,max(g[i-1][j+1],f[i-1][j])-(s[i][j]-pre[i][j]));
 		}
-		printf("%lld ",ans);
+		maxn=-1e18;
+		fd(j,m,1) {
+			g[i][j]=t[i][j]+maxn;
+			maxn=max(maxn,max(f[i-1][j-1],g[i-1][j])-(t[i][j]-suf[i][j]));
+		}
 	}
-	fo(i,1,c) son[i][0]=son[i][1]=bz[i]=sz[i]=0;
-	putchar('\n');
+	printf("%lld\n",max(*max_element(all(f[n])),*max_element(all(g[n]))));
 }
 
 void _init() {
