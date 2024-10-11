@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <cctype>
+#include <string>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/mman.h>
@@ -21,11 +23,24 @@ namespace IO {
 		for(; c>='0'&&c<='9'; c=*ch++) x=(x<<3)+(x<<1)+(c^48);
 		x*=f;
 	}
+	inline void read(char *p) {
+		char c=*ch++;
+		for(; !isgraph(c); c=*ch++);
+		for(; isgraph(c); c=*ch++) *p++=c;
+		*p='\0';
+	}
+	inline void read(std::string& s) {
+		s.clear();
+		char c=*ch++;
+		for(; !isgraph(c); c=*ch++);
+		for(; isgraph(c); c=*ch++) s+=c;
+	}
 	template<typename T,typename ...Args> void read(T &x,Args &...args) {
 		read(x);
 		read(args...);
 	}
-	template<typename T> inline void write(T x) {
+	template<typename T> inline void write(const T &y) {
+		T x=y;
 		if(x<0) {
 			pc('-');
 			x=-x;
@@ -35,15 +50,24 @@ namespace IO {
 		do *tp++=(x%10)^48; while(x/=10);
 		while(tp!=stk) pc(*--tp);
 	}
-	inline void write(char c) { pc(c); }
-	inline void init(const char* filein, const char* fileout) {
-		if(*filein) freopen(filein,"r",stdin);
-		if(*fileout) freopen(fileout,"w",stdout);
-    	ch=(char*)mmap(NULL,lseek(0,0,SEEK_END),PROT_READ,MAP_PRIVATE,0,0);
+	inline void write(const char &c) { pc(c); }
+	inline void write(const std::string &s) {
+		for(auto i : s) pc(i);
 	}
-	template<typename T,typename ...Args> void write(T x,Args ...args) {
+	inline void write(const char *p) {
+		for(; *p; ++p) pc(*p);
+	}
+	inline void write(char *p) {
+		write(static_cast<const char*>(p));
+	}
+	template<typename T,typename ...Args> void write(const T &x,const Args &...args) {
 		write(x);
 		write(args...);
+	}
+	inline void init(const char* filein, const char* fileout) {
+		if(filein!=nullptr) freopen(filein,"r",stdin);
+		if(fileout!=nullptr) freopen(fileout,"w",stdout);
+    	ch=(char*)mmap(NULL,lseek(0,0,SEEK_END),PROT_READ,MAP_PRIVATE,0,0);
 	}
 	struct TMP { ~TMP() { flush(); } } tmp;
 };
@@ -52,9 +76,13 @@ using IO::write;
 using IO::flush;
 
 int main() {
-	IO::init("io.in","io.out");
+	IO::init(nullptr,nullptr);
 	int a,b;
 	read(a,b);
-	write(a+b);
+	write(a+b,'\n');
+	// std::string s,t;
+	char s[100],t[100];
+	read(s,t);
+	write(s,' ',t,'\n');
 	return 0;
 }

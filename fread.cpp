@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <string>
+#include <cctype>
 namespace IO {
 	static const int BUF = 1<<20;
 	static char pbuf[BUF],*p=pbuf;
@@ -22,11 +24,24 @@ namespace IO {
 		for(; c>='0'&&c<='9'; c=gc()) x=(x<<3)+(x<<1)+(c^48);
 		x*=f;
 	}
+	inline void read(char *p) {
+		char c=gc();
+		for(; !isgraph(c); c=gc());
+		for(; isgraph(c); c=gc()) *p++=c;
+		*p='\0';
+	}
+	inline void read(std::string& s) {
+		s.clear();
+		char c=gc();
+		for(; !isgraph(c); c=gc());
+		for(; isgraph(c); c=gc()) s+=c;
+	}
 	template<typename T,typename ...Args> void read(T &x,Args &...args) {
 		read(x);
 		read(args...);
 	}
-	template<typename T> inline void write(T x) {
+	template<typename T> inline void write(const T &y) {
+		T x=y;
 		if(x<0) {
 			pc('-');
 			x=-x;
@@ -36,8 +51,17 @@ namespace IO {
 		do *tp++=(x%10)^48; while(x/=10);
 		while(tp!=stk) pc(*--tp);
 	}
-	inline void write(char c) { pc(c); }
-	template<typename T,typename ...Args> void write(T x,Args ...args) {
+	inline void write(const char &c) { pc(c); }
+	inline void write(const std::string &s) {
+		for(auto i : s) pc(i);
+	}
+	inline void write(const char *p) {
+		for(; *p; ++p) pc(*p);
+	}
+	inline void write(char *p) {
+		write(static_cast<const char*>(p));
+	}
+	template<typename T,typename ...Args> void write(const T &x,const Args &...args) {
 		write(x);
 		write(args...);
 	}
@@ -50,6 +74,10 @@ using IO::flush;
 int main() {
 	int a,b;
 	read(a,b);
-	write(a+b);
+	write(a+b,'\n');
+	// std::string s,t;
+	char s[100],t[100];
+	read(s,t);
+	write(s,' ',t,'\n');
 	return 0;
 }
