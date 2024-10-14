@@ -30,9 +30,9 @@
 #include <unordered_set>
 #include <utility>
 
-#define fo(i,l,r) for(int i(l),i##END(r); i<=i##END; ++i)
-#define fd(i,l,r) for(int i(l),i##END(r); i>=i##END; --i)
-#define fu(i,l,r) for(int i(l),i##END(r); i<i##END; ++i)
+#define fo(i,l,r) for(ll i(l),i##END(r); i<=i##END; ++i)
+#define fd(i,l,r) for(ll i(l),i##END(r); i>=i##END; --i)
+#define fu(i,l,r) for(ll i(l),i##END(r); i<i##END; ++i)
 #define pbk push_back
 #define ebk emplace_back
 #define mkp make_pair
