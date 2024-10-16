@@ -20,10 +20,11 @@ namespace IO {
 		x=0;
 		char c=gc();
 		T f=1;
-		for(; c<'0'||c>'9'; c=gc()) if(c=='-') f=-1;
-		for(; c>='0'&&c<='9'; c=gc()) x=(x<<3)+(x<<1)+(c^48);
+		for(; !isdigit(c); c=gc()) if(c=='-') f=-1;
+		for(; isdigit(c); c=gc()) x=(x<<3)+(x<<1)+(c^48);
 		x*=f;
 	}
+	inline void read(char &c) { c=gc(); }
 	inline void read(char *p) {
 		char c=gc();
 		for(; !isgraph(c); c=gc());
@@ -65,7 +66,7 @@ namespace IO {
 		write(x);
 		write(args...);
 	}
-	struct TMP { ~TMP() { flush(); } } tmp;
+	struct __Flusher { ~__Flusher() { flush(); } } __flusher;
 };
 using IO::read;
 using IO::write;

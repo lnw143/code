@@ -19,10 +19,11 @@ namespace IO {
 		x=0;
 		char c=*ch++;
 		T f=1;
-		for(; c<'0'||c>'9'; c=*ch++) if(c=='-') f=-1;
-		for(; c>='0'&&c<='9'; c=*ch++) x=(x<<3)+(x<<1)+(c^48);
+		for(; !isdigit(c); c=gc()) if(c=='-') f=-1;
+		for(; isdigit(c); c=gc()) x=(x<<3)+(x<<1)+(c^48);
 		x*=f;
 	}
+	inline void read(char &c) { c=gc(); }
 	inline void read(char *p) {
 		char c=*ch++;
 		for(; !isgraph(c); c=*ch++);
@@ -69,7 +70,7 @@ namespace IO {
 		if(fileout!=nullptr) freopen(fileout,"w",stdout);
     	ch=(char*)mmap(NULL,lseek(0,0,SEEK_END),PROT_READ,MAP_PRIVATE,0,0);
 	}
-	struct TMP { ~TMP() { flush(); } } tmp;
+	struct __Flusher { ~__Flusher() { flush(); } } __flusher;
 };
 using IO::read;
 using IO::write;
